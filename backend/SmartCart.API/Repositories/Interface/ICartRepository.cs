@@ -2,6 +2,7 @@ public interface ICartRepository
 {
     public Task<IEnumerable<Cart>> GetCarts();
     Task AddCart(Cart cart);
+    Task DeleteCart(Cart cart);
     public Task<Cart> GetCartById(int id);
     public Task AddItemIntoCart(CartItem cartItem);
      Task RemoveItemFromCart(CartItem cartItem);

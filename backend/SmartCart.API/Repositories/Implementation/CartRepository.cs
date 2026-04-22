@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 public class CartRepository : ICartRepository
 {
@@ -17,10 +18,15 @@ public class CartRepository : ICartRepository
     {
         return await  _context.Carts.ToListAsync();
     }
+    public async Task DeleteCart(Cart cart)
+    {
+           _context.Carts.Remove(cart);
+        await _context.SaveChangesAsync();
+    }
 
     public async Task<Cart> GetCartById(int id)
     {
-        return await  _context.Carts.FindAsync(id);
+        return await  _context.Carts.Include(c=>c.CartItems).FirstOrDefaultAsync(c=>c.Id == id);
     }
     public async Task AddItemIntoCart(CartItem cartItem)
     {
