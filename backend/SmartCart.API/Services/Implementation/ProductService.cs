@@ -7,9 +7,19 @@ public class ProductService : IProductService
         _productRepo = productRepo;
         _categoryRepo = categoryRepo;
     }
-    public Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<IEnumerable<ProductDto>> GetAllAsync()
     {
-       return  _productRepo.GetAllAsync();
+        IEnumerable<ProductDto> productDtoList = new List<ProductDto>();
+         var products =await _productRepo.GetAllAsync();
+         productDtoList= products.Select(p => new ProductDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Price = p.Price,
+            Description = p.Description,
+            CategoryId = p.CategoryId
+        }).ToList();
+        return productDtoList;
     }
     public Task AddAsync(ProductDto productDto)
     {

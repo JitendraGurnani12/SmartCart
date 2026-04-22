@@ -21,7 +21,13 @@ public class ProductController : ControllerBase
         try
         {
             var allProduct = await _iProductService.GetAllAsync();
-            return Ok(allProduct);
+            // return Ok(allProduct);
+            return Ok(new ApiResponse<IEnumerable<ProductDto>>()
+            {
+                Success = true,
+                Message ="Product Fetched",
+                Data = allProduct
+            });
         }
         catch (Exception ex)
         {

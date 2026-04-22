@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController :ControllerBase
+public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     //UserManager is built -in class of identity for manage the login and register//
@@ -21,84 +21,74 @@ public class AuthController :ControllerBase
     private readonly IConfiguration _config;
     public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
     {
-      _userManager = userManager;
-      _config = config;
+        _userManager = userManager;
+        _config = config;
     }
     [HttpPost]
     [Route("Register")]
     public async Task<IActionResult> Register(RegisterDto registerDto)
     {
-        
-            var _user = new ApplicationUser
-            {
-                UserName = registerDto.Email,
-                Email = registerDto.Email,
-                DisplayName = registerDto.DisplayName,
-                Addresses = registerDto.Addresses
-            };
-            var result = await _userManager.CreateAsync(_user, registerDto.Password);
+        var _user = new ApplicationUser
+        {
+            UserName = registerDto.Email,
+            Email = registerDto.Email,
+            DisplayName = registerDto.DisplayName,
+            Addresses = registerDto.Addresses
+        };
+        var result = await _userManager.CreateAsync(_user, registerDto.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
 
-
-            await _userManager.AddToRoleAsync(_user,"User");  //entry goes into AspNetUserRoles which have userId and roleId
-
-
-            return Ok("User Registered");
-         
+        await _userManager.AddToRoleAsync(_user, "User");  //entry goes into AspNetUserRoles which have userId and roleId
+        return Ok("User Registered");
     }
     private async Task<string> GenerateToken(ApplicationUser user)
     {
-        
-            
-            var claims = new List<Claim>
+        var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email,user.Email),
-               
+
             };
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role,role));
-            }
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
-                signingCredentials: creds
-            );
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(60),
+            signingCredentials: creds
+        );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-            
-        
-        
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     [HttpPost]
     [Route("Login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-          var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
-            if (user == null)
-                return Unauthorized("Invalid Email");
+        if (user == null)
+            return Unauthorized("Invalid Email");
 
-            var isValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+        var isValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-            if (!isValid)
-                return Unauthorized("Invalid Password");
+        if (!isValid)
+            return Unauthorized("Invalid Password");
 
-            var token = GenerateToken(user);
-            return Ok(new {Token = token});
-        
+        var token = GenerateToken(user);
+        return Ok(new { Token = token });
+
     }
 
 

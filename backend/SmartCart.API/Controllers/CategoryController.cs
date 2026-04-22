@@ -19,7 +19,13 @@ public class CategoryController : ControllerBase
         try
         {
             var allCategory = await _iCategoryService.GetAllAsync();
-            return Ok(allCategory);
+            // return Ok(allCategory);
+            return Ok(new ApiResponse<IEnumerable<CategoryDto>>()
+            {
+                Success = true,
+                Message = "category fetched Successfully",
+                Data = allCategory
+            });
         }
         catch (Exception ex)
         {

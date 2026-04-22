@@ -1,5 +1,5 @@
 public interface IProductService
 {
-    Task<IEnumerable<Product>>GetAllAsync();
+     Task<IEnumerable<ProductDto>> GetAllAsync();
     Task AddAsync(ProductDto productDto);
 }

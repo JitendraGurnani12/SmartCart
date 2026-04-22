@@ -5,9 +5,14 @@ public class CategoryService : ICategoryService
     {
         _categoryRepo = categoryRepo;
     }
-    public Task<IEnumerable<Category>> GetAllAsync()
+    public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
-       return  _categoryRepo.GetAllAsync();
+       var category=  await _categoryRepo.GetAllAsync();
+       return category.Select(x => new CategoryDto()
+       {
+            Id = x.Id,
+            Name = x.Name
+       });
     }
     public Task AddAsync(CategoryDto categoryDto)
     {
