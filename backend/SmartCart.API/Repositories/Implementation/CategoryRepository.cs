@@ -11,12 +11,12 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<Category>> GetAllAsync()
     {
-        return await _context.Categories.ToListAsync();
+        return await _context.Categories.Where(p=>!p.IsDeleted).ToListAsync();
     }
 
     public async Task<Category> GetByIdAsync(int id)
     {
-        return await _context.Categories.FindAsync(id);
+        return await _context.Categories.FirstOrDefaultAsync(c=>c.Id == id && !c.IsDeleted);
     }
 
     public async Task AddAsync(Category category)
@@ -24,4 +24,13 @@ public class CategoryRepository : ICategoryRepository
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
     }
+    public async Task Update(Category category)
+    {
+        _context.Categories.Update(category);
+        await _context.SaveChangesAsync();
+    }
+    // public async Task DeleteCategory()
+    // {
+    //     await _context
+    // }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -42,12 +43,57 @@ public class ProductController : ControllerBase
     {
         try
         {
+            productDto.UserId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             await _iProductService.AddAsync(productDto);
-            return Ok(productDto); 
+            return Ok(new ApiResponse<ProductDto>()
+            {
+                Data = productDto,
+                Success = true,
+                Message = "Product Added Successfully"
+            }); 
         }
         catch (Exception ex)
         {
            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut]
+    [Authorize(Roles = "Admin,Manager")]
+    [Route("Update")]
+    public async Task<IActionResult> UpdateProduct(ProductDto productDto)
+    {
+        try
+        {
+            productDto.UserId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            await _iProductService.UpdateAsync(productDto);
+            return Ok(new ApiResponse<ProductDto>()
+            {
+                Data = productDto,
+                Success = true,
+                Message = "Product Updated Successfully"
+            }); 
+        }
+        catch (Exception ex)
+        {
+           return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Authorize(Roles = "Admin,Manager")]
+    [Route("Delete")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        try
+        {
+            
+            await _iProductService.DeleteAsync(id);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 

@@ -1,4 +1,4 @@
-public class Product
+public class Product : BaseEntity
 {
     public int Id{ get; set; }
     public string Name{ get; set; }
@@ -7,6 +7,7 @@ public class Product
     
     // Foreign Key Property
     public int CategoryId{ get; set; }
+    
 
     //Reference Navigation -Each Product belongs to one Category
     public Category Category{ get; set; }
