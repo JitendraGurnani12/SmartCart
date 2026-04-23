@@ -16,6 +16,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [Route("GetAll")]
     public async Task< IActionResult> GetAllProduct()
     {

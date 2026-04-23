@@ -36,8 +36,9 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkS
     builder.Services.AddScoped<IOrderService ,OrderService>();
     builder.Services.AddScoped<IOrderRepository,OrderRepository>();
 
-    
-
+    //Class register for Memory Cache//
+    builder.Services.AddMemoryCache();
+    //Class register for Memory Cache//
 
 //Configure the Jwt Barrer token functionality start//
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
