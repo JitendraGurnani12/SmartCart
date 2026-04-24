@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
         if (!isValid)
             return Unauthorized("Invalid Password");
 
-        var token = GenerateToken(user);
+        var token = await GenerateToken(user);
         return Ok(new { Token = token });
 
     }
