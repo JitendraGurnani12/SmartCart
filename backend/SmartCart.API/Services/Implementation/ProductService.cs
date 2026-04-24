@@ -28,7 +28,7 @@ public class ProductService : IProductService
     public async Task AddAsync(ProductDto productDto)
     {
         _logger.LogInformation("Start Add Product in Method of Product Serevice");
-        if (!IsCategoryExist(productDto.CategoryId))
+        if (!await IsCategoryExist(productDto.CategoryId))
         {
             _logger.LogError("Category Not Exist exception occur in add product");
             throw new Exception("Category does not exist");
@@ -45,10 +45,10 @@ public class ProductService : IProductService
         _logger.LogInformation("End Of AddProduct method of Product Serevice");
          await _productRepo.AddAsync(product);
     }
-    public Task UpdateAsync(ProductDto productDto)
+    public async Task UpdateAsync(ProductDto productDto)
     {
         _logger.LogInformation("Start Update Product in Method of Product Serevice");
-        if (!IsCategoryExist(productDto.CategoryId))
+        if (!await IsCategoryExist(productDto.CategoryId))
         {
             _logger.LogError("Category Not Exist exception occur in update product");
             throw new Exception("Category does not exist");
@@ -64,7 +64,7 @@ public class ProductService : IProductService
             ModifiedOn = DateTime.UtcNow,
         };
          _logger.LogInformation("End Update Product in Method of Product Serevice");
-        return _productRepo.UpdateAsync(product);
+        await _productRepo.UpdateAsync(product);
     }
     public async Task DeleteAsync(int id)
     {
@@ -77,21 +77,9 @@ public class ProductService : IProductService
         product.IsDeleted = true;
         await _productRepo.UpdateAsync(product);
     }
-    public bool IsCategoryExist(int categoryId)
+    public async Task<bool> IsCategoryExist(int categoryId)
     {
-        bool result = true;
-        try
-        {
-            var category = _categoryRepo.GetByIdAsync(categoryId);
-            if(category == null)
-            {
-                result = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
-        return result;
+        var category = await _categoryRepo.GetByIdAsync(categoryId);
+        return category != null;
     }
 }
