@@ -3,11 +3,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration().MinimumLevel.Information().
+                WriteTo.Console().WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Hour)
+                .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+builder.Host.UseSerilog();
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
@@ -75,7 +80,7 @@ var app = builder.Build();
     if (!await roleManager.RoleExistsAsync("Manager"))
         await roleManager.CreateAsync(new IdentityRole("Manager"));    
 
-//Add role in IdentityRole Table ,only once....................End //    
+//Add role in IdentityRole Table ,only once/////....................End //    
 
 if (app.Environment.IsDevelopment())
 {

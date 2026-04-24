@@ -9,10 +9,26 @@ using Microsoft.AspNetCore.Mvc;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _iProductService;
+    private readonly ILogger<ProductController> _logger;
+   //ILogger is built-in class for logging the information in dotnet core ,
+   // //we just need to inject it in controller of class where we want logging
+   // it log the information on debug console
+   //and we need to define log level it in appSetting json file
 
-    public ProductController(IProductService iProductService)
+   //We can use ILogger everyhere ,just need to inject in all service constructor/
+   //Best things if If we add package serilog and configure it then ILogger will work like serilog
+
+    // ***********
+        //CORE CONCEPT (VERY IMPORTANT)
+    // Serilog is NOT a replacement for ILogger
+    //  It is a logging provider behind ILogger
+   //Serilog logprovider use for file logging
+   //*********** 
+
+    public ProductController(IProductService iProductService, ILogger<ProductController> logger)
     {
         _iProductService = iProductService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -22,8 +38,9 @@ public class ProductController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("Start Fetching the All Products From Controller ");
             var allProduct = await _iProductService.GetAllAsync();
-            // return Ok(allProduct);
+            _logger.LogInformation("End Fetching the All Products From Controller ");
             return Ok(new ApiResponse<IEnumerable<ProductDto>>()
             {
                 Success = true,
@@ -33,6 +50,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError("Error occurs while  Fetching the All Products From Controller ");
             return BadRequest(ex.Message);
         }
     }
@@ -55,6 +73,7 @@ public class ProductController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError("Error occurs while  adding the Products ");
            return BadRequest(ex.Message);
         }
     }
