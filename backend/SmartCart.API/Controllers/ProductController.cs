@@ -34,14 +34,14 @@ public class ProductController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     [Route("GetAll")]
-    public async Task< IActionResult> GetAllProduct()
+    public async Task< IActionResult> GetAllProduct(int page,int pageSize)
     {
         try
         {
             _logger.LogInformation("Start Fetching the All Products From Controller ");
-            var allProduct = await _iProductService.GetAllAsync();
+            var allProduct = await _iProductService.GetAllAsync(page,pageSize);
             _logger.LogInformation("End Fetching the All Products From Controller ");
-            return Ok(new ApiResponse<IEnumerable<ProductDto>>()
+            return Ok(new ApiResponse<PageResponse<ProductDto>>
             {
                 Success = true,
                 Message ="Product Fetched",

@@ -5,4 +5,5 @@ public interface IProductRepository
     Task AddAsync(Product product);
 
     Task UpdateAsync(Product product);
+    IQueryable<Product> GetProductQuery();
 }

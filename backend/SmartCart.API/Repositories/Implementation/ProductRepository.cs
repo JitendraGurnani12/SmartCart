@@ -15,7 +15,7 @@ public class ProductRepository : IProductRepository
     {
         if (! _cache.TryGetValue("products",out IEnumerable<Product>products))
         {
-            products = await _context.Products.Where(p=>!p.IsDeleted).ToListAsync();
+            products = await _context.Products.Where(p=>!p.IsDeleted).OrderBy(p=>p.Id).ToListAsync();
             var cacheOptions = new MemoryCacheEntryOptions()
                                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
 
@@ -24,6 +24,10 @@ public class ProductRepository : IProductRepository
             _cache.Set("products",products,cacheOptions);
         }
         return  products ;
+    }
+    public IQueryable<Product> GetProductQuery()
+    {
+        return _context.Products.Where(p=>!p.IsDeleted).OrderBy(p=>p.Id);   
     }
     /* *****Just small information about caching , this is not full info about caching****
 
