@@ -31,6 +31,18 @@ public class CartService : ICartService
             throw;
         }
     }
+    public async Task<Cart> GetCartByUserId(string userId)
+    {
+        try
+        {
+            var cart = await  _cartRepository.GetCartByUserId(userId);
+            return cart;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
     public async Task AddItemIntoCart(CartItemDto cartItemDto)
     {
         try

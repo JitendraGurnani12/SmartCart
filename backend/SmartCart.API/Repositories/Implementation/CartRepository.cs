@@ -45,7 +45,7 @@ public class CartRepository : ICartRepository
     }
     public async Task<Cart> GetCartByUserId(string userId)
     {
-        return await  _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+        return await  _context.Carts.Include(c=>c.CartItems).FirstOrDefaultAsync(c => c.UserId == userId);
     }
     public async Task<Cart> IsProductExistInCart(int cartId, int productId)
     {

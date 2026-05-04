@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Memory;
 
 public class ProductRepository : IProductRepository
@@ -65,6 +66,10 @@ public class ProductRepository : IProductRepository
     public async Task<Product> GetByIdAsync(int id)
     {
         return await _context.Products.FirstOrDefaultAsync(p=>p.Id == id && !p.IsDeleted);
+    }
+    public  IQueryable<Product> GetProductQueryById(int id)
+    {
+        return   _context.Products.Where(p=>!p.IsDeleted && p.Id == id);
     }
 
     public async Task AddAsync(Product product)

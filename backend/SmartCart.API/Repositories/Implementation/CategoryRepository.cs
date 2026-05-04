@@ -25,6 +25,19 @@ public class CategoryRepository : ICategoryRepository
         }
         return Categories;
     }
+    
+    // public  IQueryable<Product> GetProductQueryById(int id)
+    // {
+    //     return   _context.Products.Where(p=>!p.IsDeleted && p.Id == id);
+    // }
+    public IQueryable<Category> GetCategoriesQuery()
+    {
+        return _context.Categories.Where(c=>!c.IsDeleted).OrderBy(c=>c.Id);
+    }
+    public IQueryable<Category> GetCategoryQueryId(int id)
+    {
+        return _context.Categories.Where(c=>!c.IsDeleted && c.Id == id);
+    }
 
     public async Task<Category> GetByIdAsync(int id)
     {

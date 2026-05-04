@@ -1,18 +1,28 @@
+using Microsoft.Extensions.Caching.Memory;
+
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepo;
-    public CategoryService(ICategoryRepository categoryRepo)
+    private readonly IMemoryCache _cache;
+    public CategoryService(ICategoryRepository categoryRepo, IMemoryCache cache)
     {
         _categoryRepo = categoryRepo;
+        _cache = cache;
     }
     public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
-       var category=  await _categoryRepo.GetAllAsync();
-       return category.Select(x => new CategoryDto()
-       {
-            Id = x.Id,
-            Name = x.Name
-       });
+        if(!_cache.TryGetValue("categories",out List<CategoryDto> categories))
+        {
+            var category=  await _categoryRepo.GetAllAsync();
+            
+            categories = category.Select(x => new CategoryDto()
+            {
+                    Id = x.Id,
+                    Name = x.Name
+            }).ToList();
+            _cache.Set("categories",categories);
+        }
+        return categories;
     }
     public Task AddAsync(CategoryDto categoryDto)
     {
@@ -23,6 +33,7 @@ public class CategoryService : ICategoryService
             CreatedOn = DateTime.UtcNow,
             CreatedBy = categoryDto.UserId,
         };
+        _cache.Remove("categories");
         return _categoryRepo.AddAsync(category);
     }
     public Task<Category> GetByIdAsync(int id)
@@ -40,6 +51,7 @@ public class CategoryService : ICategoryService
             ModifiedOn = DateTime.UtcNow,
             ModifiedBy = categoryDto.UserId,
         };
+        _cache.Remove("categories");
         return _categoryRepo.Update(category);
     }
     public async Task DeleteAsync(int id)
@@ -50,6 +62,7 @@ public class CategoryService : ICategoryService
             throw new KeyNotFoundException("Category does not exist");
         }
         category.IsDeleted = true;
+        _cache.Remove("categories");
         await _categoryRepo.Update(category);
     }
 }

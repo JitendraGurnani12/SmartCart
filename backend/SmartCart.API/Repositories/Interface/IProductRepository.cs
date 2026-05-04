@@ -6,4 +6,5 @@ public interface IProductRepository
 
     Task UpdateAsync(Product product);
     IQueryable<Product> GetProductQuery();
+    IQueryable<Product> GetProductQueryById(int id);
 }

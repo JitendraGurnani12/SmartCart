@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepo;
     private readonly ICategoryRepository _categoryRepo;
     private readonly ILogger<ProductService> _logger;
+    private readonly IMemoryCache _cache;
     /*
     For My Understanding I have copied from Googlegemini ,jsut for reading............
     
@@ -142,6 +144,28 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
             Data = productDtoList
         };
     }
+    public async Task<ProductDto> GetByIdAsync(int id)
+    {
+        var cacheKey= $"product_{id}";
+        if (! _cache.TryGetValue(cacheKey,out ProductDto productDto))
+        {
+            var product = await _productRepo.GetProductQueryById(id).FirstOrDefaultAsync();
+            if(product == null)
+            {
+                throw new Exception("Product not found");
+            }
+            productDto = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description
+            };
+            _cache.Set(cacheKey,productDto,TimeSpan.FromMinutes(15));
+
+        }
+        return productDto;
+    }
     public async Task AddAsync(ProductDto productDto)
     {
         _logger.LogInformation("Start Add Product in Method of Product Serevice");
@@ -161,6 +185,7 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
         };
         _logger.LogInformation("End Of AddProduct method of Product Serevice");
          await _productRepo.AddAsync(product);
+        _cache.Remove($"product_{product.Id}");
     }
     public async Task UpdateAsync(ProductDto productDto)
     {
@@ -182,6 +207,7 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
         };
          _logger.LogInformation("End Update Product in Method of Product Serevice");
         await _productRepo.UpdateAsync(product);
+        _cache.Remove($"product_{product.Id}");
     }
     public async Task DeleteAsync(int id)
     {
@@ -193,6 +219,7 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
         }
         product.IsDeleted = true;
         await _productRepo.UpdateAsync(product);
+        _cache.Remove($"product_{product.Id}");
     }
     public async Task<bool> IsCategoryExist(int categoryId)
     {

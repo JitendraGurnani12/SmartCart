@@ -7,67 +7,83 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class CartController : ControllerBase
 {
-    private readonly ICartService _cartService;
-    public CartController(ICartService cartService)
-    {
-        
-        _cartService = cartService;
-    }
+        private readonly ICartService _cartService;
+        public CartController(ICartService cartService)
+        {
 
-    [HttpGet]
-    [Route("Get")]
-    public  async Task<IActionResult> Get()
-    {
-        
-                
-            return Ok();
-            
-       
-    }
+                _cartService = cartService;
+        }
 
-    [HttpPost]
-    [Route("Add")]
-    public async Task<IActionResult> AddItemIntoCart(CartItemDto cartItemDto)
-    {
-        
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            cartItemDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-           await _cartService.AddItemIntoCart(cartItemDto);
-            return Ok();
-        
-        
-    }
+        [HttpGet]
+        [Route("Get")]
+        public async Task<IActionResult> Get()
+        {
 
-    [HttpPut]
-    [Route("Update")]
-    public async Task<IActionResult> UpdateItemIntoCart()
-    {
-        
-            return Ok();
-        
-       
-    }
-
-    [HttpDelete]
-    [Route("Remove")]
-    public async Task<IActionResult> RemoveItemFromCart()
-    {
-        
-            return Ok();
-        
-    }
+                await _cartService.GetCarts();       
+                return Ok();
 
 
+        }
+        [HttpGet]
+        [Route("GetCartByUserId")]
+        public async Task<IActionResult> GetCartByUserId()
+        {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+                var cart = await _cartService.GetCartByUserId(userId);
+                if(cart != null)
+                {
+                        
+                        return Ok(new ApiResponse<Cart>()
+                        {
+                                Success = true,
+                                Message = "Cart Fetched Successfully",
+                                Data = cart
+                        });
+                }
+                else
+                {
+                        return NoContent();
+                }
+        }
 
-    /*
-    📡 APIs YOU MUST BUILD
-1. Add to Cart
-POST /api/cart/add
-2. Get Cart
-GET /api/cart
-3. Update Quantity
-PUT /api/cart/update
-4. Remove Item
-DELETE /api/cart/remove/{id} 
-    */
+        [HttpPost]
+        [Route("Add")]
+        public async Task<IActionResult> AddItemIntoCart(CartItemDto cartItemDto)
+        {
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+                cartItemDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                await _cartService.AddItemIntoCart(cartItemDto);
+                return Ok();
+        }
+
+        // [HttpPut]
+        // [Route("Update")]
+        // public async Task<IActionResult> UpdateItemIntoCart()
+        // {
+        //         return Ok();
+        // }
+
+        [HttpDelete]
+        [Route("Remove")]
+        public async Task<IActionResult> RemoveItemFromCart()
+        {
+
+                return Ok();
+
+        }
+
+
+
+        /*
+        📡 APIs YOU MUST BUILD
+    1. Add to Cart
+    POST /api/cart/add
+    2. Get Cart
+    GET /api/cart
+    3. Update Quantity
+    PUT /api/cart/update
+    4. Remove Item
+    DELETE /api/cart/remove/{id} 
+        */
 }
