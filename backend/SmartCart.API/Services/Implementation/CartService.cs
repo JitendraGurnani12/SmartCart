@@ -100,4 +100,24 @@ public class CartService : ICartService
         await _cartRepository.AddCart(cart);
         
     }
+    public async Task RemoveItemFromCart(CartItemDto cartItemDto)
+    {
+        try
+        {
+            var existCartItem = await _cartRepository.GetCartItemsByCartId(cartItemDto.CartId, cartItemDto.ProductId);
+            if (existCartItem == null)
+            {
+                throw new KeyNotFoundException("CartItem not found");
+            }
+            else
+            {
+                await _cartRepository.RemoveItemFromCart(existCartItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
 }

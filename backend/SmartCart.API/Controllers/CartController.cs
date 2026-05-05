@@ -51,7 +51,6 @@ public class CartController : ControllerBase
         public async Task<IActionResult> AddItemIntoCart(CartItemDto cartItemDto)
         {
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
                 cartItemDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 await _cartService.AddItemIntoCart(cartItemDto);
                 return Ok();
@@ -65,12 +64,13 @@ public class CartController : ControllerBase
         // }
 
         [HttpDelete]
-        [Route("Remove")]
-        public async Task<IActionResult> RemoveItemFromCart()
+        [Route("RemoveItem")]
+        public async Task<IActionResult> RemoveItemFromCart(CartItemDto cartItemDto)
         {
 
+                cartItemDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                await _cartService.RemoveItemFromCart(cartItemDto);
                 return Ok();
-
         }
 
 
