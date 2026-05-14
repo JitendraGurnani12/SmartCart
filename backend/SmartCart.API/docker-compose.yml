@@ -1,0 +1,29 @@
+
+
+version: '2.0'
+services:
+    smartcartmainpractice-api:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "5096:8080"
+      environment:
+        - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=${DB_NAME};User=${DB_USERNAME};Password=${DB_PASSWORD};TrustServerCertificate=True;
+      depends_on:
+        - sqlserver
+      command: sh -c "sleep 20 && dotnet SmartCart.API.dll"
+
+    sqlserver:
+      image: mcr.microsoft.com/mssql/server:2019-latest
+      environment:
+        ACCEPT_EULA: "Y"
+        SA_PASSWORD: ${DB_PASSWORD}
+
+      ports:
+        - "1433:1433"
+
+      volumes:
+        - sql_data:/var/opt/mssql
+volumes:
+  sql_data:            
