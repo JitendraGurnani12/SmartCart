@@ -19,10 +19,19 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     });;
 
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 //Register the Dbcontext start //
 builder.Services.AddDbContext<AppDbContext>(sqlServer=>
-    sqlServer.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    sqlServer.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(); // this line added because if sql connection take time while docker command 
+                                            // //then it retry for connection//
+                                            //If SQL container still starting:
+                                                // retry connection automatically
+                                                // Very common problem in Docker/Kubernetes/cloud.
+    }));
 
 //Register the Dbcontext end //
 
@@ -73,28 +82,61 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-//Add role in IdentityRole Table ,only once ////Table Name is AspNetRoles this is master table for roles...... Start//
 
-    var roleManager = app.Services.CreateScope().ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    if (!await roleManager.RoleExistsAsync("Admin"))
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
-    if (!await roleManager.RoleExistsAsync("User"))
-        await roleManager.CreateAsync(new IdentityRole("User"));
-    if (!await roleManager.RoleExistsAsync("Manager"))
-        await roleManager.CreateAsync(new IdentityRole("Manager"));    
-
-//Add role in IdentityRole Table ,only once/////....................End //    
+    
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // remove for just development phase//
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+    dbContext.Database.Migrate();
+} // this lines added because at application startup first using docker, migration not run automatically,Db not create,
+// so we need to specify mannualy if DB is missing then run migrations automatically while docker command run//
+
+//Add role in IdentityRole Table ,only once ////Table Name is AspNetRoles this is master table for roles...... Start//
+
+    // var roleManager = app.Services.CreateScope().ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    // if (!await roleManager.RoleExistsAsync("Admin"))
+    //     await roleManager.CreateAsync(new IdentityRole("Admin"));
+    // if (!await roleManager.RoleExistsAsync("User"))
+    //     await roleManager.CreateAsync(new IdentityRole("User"));
+    // if (!await roleManager.RoleExistsAsync("Manager"))
+    //     await roleManager.CreateAsync(new IdentityRole("Manager"));// line commented becaues we face below issue//
+    
+//Add role in IdentityRole Table ,only once/////....................End //
+
+    using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var dbContext = services.GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "Admin", "Manager", "User" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}  // this line is written because we are facing issue while docker compose command, first db should be create, then table ,
+// //then insert role into table sequence matter if role insert before table create so error will show and container not created 
 app.Run();

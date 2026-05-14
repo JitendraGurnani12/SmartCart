@@ -18,4 +18,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<Product>()
+            .Property(p => p.Price)
+            .HasPrecision(18, 2);
+    }
 }
