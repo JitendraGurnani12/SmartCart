@@ -1,0 +1,138 @@
+<div class="register-container">
+
+  <div class="card register-card shadow">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">SmartCart</h2>
+      <p class="text-muted mb-0">
+        Create your account
+      </p>
+    </div>
+
+    <form #registerForm="ngForm"
+          (ngSubmit)="onSubmit()">
+
+      <!-- Display Name -->
+
+      <div class="mb-3">
+        <label class="form-label">
+          Full Name (FirstName LastName)
+        </label>
+
+        <input
+          type="text"
+          class="form-control"
+          name="displayName"
+          [(ngModel)]="registerDto.displayName"
+          #displayName="ngModel"
+          required>
+
+        <small
+          class="text-danger"
+          *ngIf="submitted && displayName.invalid">
+
+          Name is required
+        </small>
+      </div>
+
+      <!-- Email -->
+
+      <div class="mb-3">
+        <label class="form-label">
+          Email
+        </label>
+
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          [(ngModel)]="registerDto.email"
+          #email="ngModel"
+          required
+          email>
+
+        <small
+          class="text-danger"
+          *ngIf="submitted && email.invalid">
+
+          Valid Email is required
+        </small>
+      </div>
+
+      <!-- Password -->
+
+      <div class="mb-3">
+        <label class="form-label">
+          Password
+        </label>
+
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="registerDto.password"
+          #password="ngModel"
+          required
+          minlength="6">
+
+        <small
+          class="text-danger"
+          *ngIf="submitted && password.invalid">
+
+          Password must be at least 6 characters
+        </small>
+      </div>
+
+      <!-- Address -->
+
+      <div class="mb-3">
+        <label class="form-label">
+          Address
+        </label>
+
+        <textarea
+          rows="3"
+          class="form-control"
+          name="addresses"
+          [(ngModel)]="registerDto.addresses"
+          #addresses="ngModel"
+          required>
+        </textarea>
+
+        <small
+          class="text-danger"
+          *ngIf="submitted && addresses.invalid">
+
+          Address is required
+        </small>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-success w-100">
+
+        Create Account
+
+      </button>
+
+    </form>
+
+    <div class="text-center mt-3">
+
+      <span class="text-muted">
+        Already have an account?
+      </span>
+
+      <a
+        routerLink="/auth/login"
+        class="text-decoration-none ms-1">
+
+        Login
+
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
