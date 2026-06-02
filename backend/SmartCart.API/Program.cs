@@ -52,9 +52,16 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkS
 
     builder.Services.AddScoped<IOrderService ,OrderService>();
     builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAnyOrigins", policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        });
+    });
 
-    //Class register for Memory Cache//
-    builder.Services.AddMemoryCache();
+//Class register for Memory Cache//
+builder.Services.AddMemoryCache();
     //Class register for Memory Cache//
 
 //Configure the Jwt Barrer token functionality start//
@@ -84,6 +91,7 @@ var app = builder.Build();
 
 
     
+app.UseCors("AllowAnyOrigins");
 
 if (app.Environment.IsDevelopment())
 {

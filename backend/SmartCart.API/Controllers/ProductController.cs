@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]
+    // [AllowAnonymous]
     [Route("GetAll")]
     public async Task< IActionResult> GetAllProduct(int page,int pageSize)
     {

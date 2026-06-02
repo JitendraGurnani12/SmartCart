@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
 
         await _userManager.AddToRoleAsync(_user, "User");  //entry goes into AspNetUserRoles which have userId and roleId
-        return Ok("User Registered");
+        return Ok(registerDto);
     }
     private async Task<string> GenerateToken(ApplicationUser user)
     {
@@ -87,7 +87,7 @@ public class AuthController : ControllerBase
             return Unauthorized("Invalid Password");
 
         var token = await GenerateToken(user);
-        return Ok(new { Token = token });
+        return Ok(new { Token = token , user.Email, user.DisplayName});
 
     }
 
