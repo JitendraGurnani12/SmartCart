@@ -55,9 +55,30 @@ export class CartComponent implements OnInit {
   }
   increaseQuantity(item : CartItem){
     item.quantity = item.quantity + 1;
+    this.updateQuantityInDb(item)
+  }
+  updateQuantityInDb(item:CartItem){
+    this.cartService.updateQuantityInCart(item).subscribe({
+      next:(response)=>{
+        this.loadCart();
+      }
+    })
   }
   decreaseQuantity(item:CartItem){
-    item.quantity = item.quantity - 1;
+    if (item.quantity > 1) {
+      item.quantity--;
+       this.updateQuantityInDb(item)
+    }
+  }
+  removeItemFromCart(item:CartItem){
+    this.cartService.removeItemFromCart(item).subscribe({
+      next :(response)=>{
+        this.loadCart();
+      },
+      error:(error)=>{
+        alert(error)
+      }
+    })
   }
 
 }

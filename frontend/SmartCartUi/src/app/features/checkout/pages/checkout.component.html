@@ -1,0 +1,87 @@
+<div class="container mt-4">
+
+  <h2 class="mb-4">
+    Checkout
+  </h2>
+
+  <div *ngIf="cart?.cartItems?.length">
+
+    <div
+      class="card mb-3 shadow-sm"
+      *ngFor="let item of cart.cartItems">
+
+      <div class="card-body">
+
+        <div class="row align-items-center">
+
+          <div class="col-md-2">
+
+            <img
+              [src]="'http://localhost:5096' + item.imageUrl"
+              [alt]="item.productName"
+              class="img-fluid rounded">
+
+          </div>
+
+          <div class="col-md-4">
+
+            <h5>
+              {{ item.productName }}
+            </h5>
+
+          </div>
+
+          <div class="col-md-2">
+
+            Qty: {{ item.quantity }}
+
+          </div>
+
+          <div class="col-md-2">
+
+            ₹ {{ item.price }}
+
+          </div>
+
+          <div class="col-md-2">
+
+            ₹ {{ item.price * item.quantity }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card shadow">
+
+      <div class="card-body">
+
+        <h4>
+
+          Total Amount:
+          <span class="text-success">
+
+            ₹ {{ getTotalAmount() }}
+
+          </span>
+
+        </h4>
+
+        <button
+          class="btn btn-success btn-lg mt-3"
+          (click)="placeOrder()">
+
+          Place Order
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

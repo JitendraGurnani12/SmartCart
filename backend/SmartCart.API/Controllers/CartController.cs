@@ -72,6 +72,15 @@ public class CartController : ControllerBase
                 await _cartService.RemoveItemFromCart(cartItemDto);
                 return Ok();
         }
+        [HttpPut]
+        [Route("UpdateQuantity")]
+        public async Task<IActionResult> UpdateQuantityInCart(UpdateCartItemDto dto)
+        {
+                // cartItemDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                await _cartService.UpdateItemQuantityIntoCart(dto);
+                return Ok();
+                
+        }
 
 
 

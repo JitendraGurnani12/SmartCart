@@ -1,6 +1,6 @@
 <div class="container mt-4">
 
-  <h2 class="mb-4">
+  <h2 class="mb-4 fw-bold">
     My Cart
   </h2>
 
@@ -10,40 +10,99 @@
       class="card mb-3 shadow-sm"
       *ngFor="let item of cart.cartItems">
 
-      <div class="row g-0 align-items-center">
+      <div class="card-body">
 
-        <div class="col-md-2 text-center">
+        <div class="row align-items-center">
 
-          <img
-            [src]="'http://localhost:5096' + item.imageUrl"
-            [alt]="item.productName"
-            class="img-fluid rounded p-2">
+          <!-- Product Image -->
 
-        </div>
+          <div class="col-md-2 text-center">
 
-        <div class="col-md-5">
+            <img
+              [src]="'http://localhost:5096' + item.imageUrl"
+              [alt]="item.productName"
+              class="img-fluid rounded"
+              style="height:120px; object-fit:contain;">
 
-          <div class="card-body">
+          </div>
 
-            <h5>
+          <!-- Product Name -->
+
+          <div class="col-md-3">
+
+            <h5 class="mb-0">
               {{ item.productName }}
             </h5>
 
           </div>
 
-        </div>
+          <!-- Price -->
 
-        <div class="col-md-2 text-center">
+          <div class="col-md-2 text-center">
 
-          Qty: {{ item.quantity }}
+            <strong>
+              ₹ {{ item.price }}
+            </strong>
 
-        </div>
+          </div>
 
-        <div class="col-md-2 text-center">
+          <!-- Quantity -->
 
-          ₹ {{ item.price }}
-          <button (click)="increaseQuantity(item)">Increase</button>
-          <button (click)="decreaseQuantity(item)">Decrease</button>
+          <div class="col-md-2 text-center">
+
+            <div class="d-flex justify-content-center align-items-center">
+
+              <button
+                class="btn btn-outline-secondary btn-sm"
+                (click)="decreaseQuantity(item)">
+
+                <i class="bi bi-dash-lg"></i>
+
+              </button>
+
+              <span class="mx-3 fw-bold">
+
+                {{ item.quantity }}
+
+              </span>
+
+              <button
+                class="btn btn-outline-primary btn-sm"
+                (click)="increaseQuantity(item)">
+
+                <i class="bi bi-plus-lg"></i>
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- Subtotal -->
+
+          <div class="col-md-2 text-center">
+
+            <strong class="text-success">
+
+              ₹ {{ item.price * item.quantity }}
+
+            </strong>
+
+          </div>
+
+          <!-- Remove -->
+
+          <div class="col-md-1 text-center">
+
+            <button
+              class="btn btn-outline-danger btn-sm"
+              (click)="removeItemFromCart(item)">
+
+              <i class="bi bi-trash"></i>
+
+            </button>
+
+          </div>
 
         </div>
 
@@ -51,9 +110,11 @@
 
     </div>
 
-    <div class="card shadow-sm">
+    <!-- Cart Summary -->
 
-      <div class="card-body">
+    <div class="card shadow">
+
+      <div class="card-body text-end">
 
         <h4>
 
@@ -67,7 +128,7 @@
         </h4>
 
         <button
-          class="btn btn-success mt-3">
+          class="btn btn-success btn-lg mt-2" routerLink="/checkout">
 
           Proceed To Checkout
 

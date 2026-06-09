@@ -28,7 +28,7 @@ export class ProductDetailsComponent
   }
 
   addToCart(): void {
-    debugger;
+  
     this.cartService.addToCart(this.productDetail.id).subscribe({ next: () => {
           alert('Product added to cart');
         },

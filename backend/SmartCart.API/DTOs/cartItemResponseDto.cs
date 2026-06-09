@@ -7,6 +7,7 @@ public class CartItemResponseDto
     public decimal Price { get; set; }
 
     public string ImageUrl { get; set; }
+    public int CartId { get; set; }
 
     public int Quantity { get; set; }
 }

@@ -55,7 +55,8 @@ public class CartService : ICartService
 
                     ImageUrl = ci.Product.ImageUrl,
 
-                    Quantity = ci.Quantity
+                    Quantity = ci.Quantity,
+                    CartId = cart.Id
 
                 }).ToList()
         };
@@ -129,6 +130,26 @@ public class CartService : ICartService
             else
             {
                 await _cartRepository.RemoveItemFromCart(existCartItem);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+    public async Task  UpdateItemQuantityIntoCart(UpdateCartItemDto dto)
+    {
+        try
+        {
+            var existCartItem = await _cartRepository.GetCartItemsByCartId(dto.CartId, dto.ProductId);
+            if (existCartItem == null)
+            {
+                throw new KeyNotFoundException("CartItem not found");
+            }
+            else
+            {
+                existCartItem.Quantity = dto.Quantity;
+                await _cartRepository.UpdateItemQuantityIntoCart(existCartItem);
             }
         }
         catch (Exception ex)
