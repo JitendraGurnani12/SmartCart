@@ -87,11 +87,13 @@ Aapka order (method) pause ho gaya hai jab tak khana nahi aata.
 Lekin waiter (thread) pause nahi hua, wo doosre customers ko paani de raha hai.
 Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se resume ho jayega jahan pause hua tha.
         */
-    public ProductService(IProductRepository productRepo,ICategoryRepository categoryRepo, ILogger<ProductService> logger)
+    public ProductService(IProductRepository productRepo,ICategoryRepository categoryRepo, ILogger<ProductService> logger,
+    IMemoryCache cache)
     {
         _productRepo = productRepo;
         _categoryRepo = categoryRepo;
         _logger = logger;
+        _cache = cache;
     }
     // public async Task<IEnumerable<ProductDto>> GetAllAsync()
     // {
@@ -131,8 +133,13 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
             Name = p.Name,
             Price = p.Price,
             Description = p.Description,
+            ImageUrl = p.ImageUrl,
             CategoryId = p.CategoryId
         }).ToList();
+        foreach(var product in productDtoList)
+        {
+            product.ImageUrl = $"http://localhost:5096{product.ImageUrl}";
+        }
 
         _logger.LogInformation("Products fetched successfully");
 
@@ -159,7 +166,8 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
-                Description = product.Description
+                Description = product.Description,
+                ImageUrl = $"http://localhost:5096{product.ImageUrl}"
             };
             _cache.Set(cacheKey,productDto,TimeSpan.FromMinutes(15));
 

@@ -31,17 +31,34 @@ public class CartService : ICartService
             throw;
         }
     }
-    public async Task<Cart> GetCartByUserId(string userId)
+    public async Task<CartResponseDto> GetCartByUserId(string userId)
     {
-        try
+        var cart = await _cartRepository.GetCartByUserId(userId);
+
+        if (cart == null)
         {
-            var cart = await  _cartRepository.GetCartByUserId(userId);
-            return cart;
+            return null;
         }
-        catch (Exception ex)
+
+        return new CartResponseDto
         {
-            throw;
-        }
+            Id = cart.Id,
+
+            CartItems = cart.CartItems
+                .Select(ci => new CartItemResponseDto
+                {
+                    ProductId = ci.ProductId,
+
+                    ProductName = ci.Product.Name,
+
+                    Price = ci.Product.Price,
+
+                    ImageUrl = ci.Product.ImageUrl,
+
+                    Quantity = ci.Quantity
+
+                }).ToList()
+        };
     }
     public async Task AddItemIntoCart(CartItemDto cartItemDto)
     {

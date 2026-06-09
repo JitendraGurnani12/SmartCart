@@ -1,0 +1,68 @@
+<div
+  class="container mt-5"
+  *ngIf="productDetail">
+
+  <div class="row">
+
+    <!-- Image -->
+
+    <div class="col-md-5">
+
+      <div class="card shadow-sm">
+
+        <img
+         [src]="productDetail.imageUrl"
+          [alt]="productDetail.name"
+          class="product-image">
+
+      </div>
+
+    </div>
+
+    <!-- Product Info -->
+
+    <div class="col-md-7">
+
+      <h2 class="fw-bold">
+        {{ productDetail.name }}
+      </h2>
+
+      <h3 class="text-success my-3">
+        ₹ {{ productDetail.price }}
+      </h3>
+
+      <hr>
+
+      <h5>
+        Description
+      </h5>
+
+      <p class="text-muted">
+        {{ productDetail.description }}
+      </p>
+
+      <div class="mt-4">
+
+        <button
+          class="btn btn-success btn-lg me-2"
+          (click)="addToCart()">
+
+          Add To Cart
+
+        </button>
+
+        <button
+          class="btn btn-outline-secondary btn-lg"
+          routerLink="/products">
+
+          Back To Products
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

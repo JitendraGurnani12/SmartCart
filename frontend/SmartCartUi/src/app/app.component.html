@@ -1,2 +1,45 @@
-<!-- <h1>Smart Cart Practice Project</h1> -->
- <router-outlet></router-outlet>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+  <div class="container">
+
+    <a
+      class="navbar-brand"
+      routerLink="/products">
+
+      SmartCart
+
+    </a>
+
+    <div class="navbar-nav ms-auto">
+
+      <a
+        class="nav-link"
+        routerLink="/products">
+
+        Products
+
+      </a>
+
+      <a
+        class="nav-link"
+        routerLink="/cart">
+
+        Cart
+
+      </a>
+
+      <a
+        class="nav-link"
+        (click)="logout()">
+
+        Logout
+
+      </a>
+
+    </div>
+
+  </div>
+
+</nav>
+
+<router-outlet></router-outlet>

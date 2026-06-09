@@ -7,8 +7,10 @@ public class Product : BaseEntity
     
     // Foreign Key Property
     public int CategoryId{ get; set; }
+    public string ImageUrl{get;set;}
     
 
     //Reference Navigation -Each Product belongs to one Category
     public Category Category{ get; set; }
+    // public ICollection<ProductImage> ProductImages  {  get;  set;  }
 }

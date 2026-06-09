@@ -1,0 +1,92 @@
+<div class="container mt-4">
+
+  <h2 class="mb-4">
+    My Cart
+  </h2>
+
+  <div *ngIf="cart?.cartItems?.length; else emptyCart">
+
+    <div
+      class="card mb-3 shadow-sm"
+      *ngFor="let item of cart.cartItems">
+
+      <div class="row g-0 align-items-center">
+
+        <div class="col-md-2 text-center">
+
+          <img
+            [src]="'http://localhost:5096' + item.imageUrl"
+            [alt]="item.productName"
+            class="img-fluid rounded p-2">
+
+        </div>
+
+        <div class="col-md-5">
+
+          <div class="card-body">
+
+            <h5>
+              {{ item.productName }}
+            </h5>
+
+          </div>
+
+        </div>
+
+        <div class="col-md-2 text-center">
+
+          Qty: {{ item.quantity }}
+
+        </div>
+
+        <div class="col-md-2 text-center">
+
+          ₹ {{ item.price }}
+          <button (click)="increaseQuantity(item)">Increase</button>
+          <button (click)="decreaseQuantity(item)">Decrease</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <h4>
+
+          Total:
+          <span class="text-success">
+
+            ₹ {{ getTotalAmount() }}
+
+          </span>
+
+        </h4>
+
+        <button
+          class="btn btn-success mt-3">
+
+          Proceed To Checkout
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <ng-template #emptyCart>
+
+    <div class="alert alert-info">
+
+      Your cart is empty.
+
+    </div>
+
+  </ng-template>
+
+</div>

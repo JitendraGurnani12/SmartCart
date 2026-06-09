@@ -18,32 +18,32 @@ public class CartController : ControllerBase
         [Route("Get")]
         public async Task<IActionResult> Get()
         {
-
-                await _cartService.GetCarts();       
-                return Ok();
-
-
+                var carts = await _cartService.GetCarts();
+                return Ok(carts);
         }
+
         [HttpGet]
         [Route("GetCartByUserId")]
         public async Task<IActionResult> GetCartByUserId()
         {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-                var cart = await _cartService.GetCartByUserId(userId);
-                if(cart != null)
-                {
-                        
-                        return Ok(new ApiResponse<Cart>()
-                        {
-                                Success = true,
-                                Message = "Cart Fetched Successfully",
-                                Data = cart
-                        });
-                }
-                else
+                var userId =
+                    User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? string.Empty;
+
+                var cart =
+                    await _cartService.GetCartByUserId(userId);
+
+                if (cart == null)
                 {
                         return NoContent();
                 }
+
+                return Ok(new ApiResponse<CartResponseDto>
+                {
+                        Success = true,
+                        Message = "Cart Fetched Successfully",
+                        Data = cart
+                });
         }
 
         [HttpPost]

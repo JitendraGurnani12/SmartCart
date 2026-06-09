@@ -99,8 +99,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseSwagger();
 app.UseSwaggerUI();
-
 // app.UseHttpsRedirection(); // remove for just development phase//
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 

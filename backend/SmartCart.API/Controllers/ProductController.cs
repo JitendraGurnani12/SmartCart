@@ -40,6 +40,7 @@ public class ProductController : ControllerBase
         {
             _logger.LogInformation("Start Fetching the All Products From Controller ");
             var allProduct = await _iProductService.GetAllAsync(page,pageSize);
+            
             _logger.LogInformation("End Fetching the All Products From Controller ");
             return Ok(new ApiResponse<PageResponse<ProductDto>>
             {
@@ -51,6 +52,25 @@ public class ProductController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError("Error occurs while  Fetching the All Products From Controller ");
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpGet]
+    // [AllowAnonymous]
+    [Route("GetById")]
+    public async Task< IActionResult> GetProductById(int productId)
+    {
+        try
+        {
+            _logger.LogInformation("Start Fetching the Product Detail From Controller ");
+            var productDetail = await _iProductService.GetByIdAsync(productId);
+            
+            _logger.LogInformation("End Fetching the Product Detail From Controller ");
+            return Ok(productDetail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error occurs while  Fetching the Product Detail From Controller ");
             return BadRequest(ex.Message);
         }
     }

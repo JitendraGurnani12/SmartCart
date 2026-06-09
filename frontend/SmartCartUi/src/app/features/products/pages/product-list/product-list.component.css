@@ -1,12 +1,24 @@
-.card {
+.product-card {
+  border: none;
   border-radius: 12px;
-  transition: 0.2s ease;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-3px);
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  height: 220px;
+  object-fit: cover;
+  background-color: #f8f9fa;
 }
 
 .card-title {
   font-weight: 600;
+}
+
+.card-footer {
+  padding-top: 0;
 }
