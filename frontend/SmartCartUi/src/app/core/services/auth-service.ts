@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -7,11 +8,14 @@ import { Router } from "@angular/router";
 export class AuthService {
 
   private readonly TOKEN_KEY = 'token';
-  constructor(router:Router){
+  private isUserLogedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
+   isUserLogedInObservable = this.isUserLogedInSubject.asObservable();
+  constructor(router:ActivatedRoute){
     
   }
 
   setToken(token: string): void {
+    this.isUserLogedInSubject.next(true);
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
@@ -26,8 +30,8 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
-  // logout() {
-  //  this.removeToken();
-  //  this.router.navigate(['/auth/login']);
-  // }
+  logout() {
+    this.isUserLogedInSubject.next(false);
+   localStorage.clear();
+  }
 }

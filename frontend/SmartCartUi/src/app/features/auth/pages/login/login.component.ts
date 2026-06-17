@@ -3,6 +3,7 @@ import { LoginRequest } from '../../models/login-request.model';
 import { AuthApiService } from '../../services/auth-api.service';
 import { Route, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth-service';
+import { ToasterService } from 'src/app/shared/toaster/service/toaster.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,8 @@ export class LoginComponent {
 
   constructor(private authApiService: AuthApiService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toasterService: ToasterService
   ) {
 
   }
@@ -23,7 +25,9 @@ export class LoginComponent {
   };
    submitted = false;
   ngOnInit(){
-
+    if(this.authService.isLoggedIn()){
+      this.router.navigate(['/products']);
+    }
   }
   onSubmit(): void {
 
@@ -33,16 +37,22 @@ export class LoginComponent {
       return;
     }
     console.log('Login Request', this.loginDto);
-    // Call API here later
-    this.authApiService.login(this.loginDto).subscribe(data=>{
-      // localStorage.setItem('token', data.token); 
+
+    this.authApiService.login(this.loginDto).subscribe(data => {
+
       this.authService.setToken(data.token);
-      alert('Login Successful'); 
+
+      localStorage.setItem('logedInUserDisplayName', data.displayName);
       this.router.navigate(['/products']);
-    })
+    },
+      (error) => {
+        debugger;
+        this.toasterService.showWarningToast(error.error);
+      })
   }
+
   logout() {
-   this.authService.removeToken();
+   this.authService.logout();
    this.router.navigate(['/auth/login']);
   }
 }

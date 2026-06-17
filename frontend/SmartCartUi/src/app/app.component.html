@@ -1,45 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
-  <div class="container">
+<app-navbar *ngIf="isUserLogedIn"></app-navbar>
+<app-toaster></app-toaster>
+<div class="container-fluid">
 
-    <a
-      class="navbar-brand"
-      routerLink="/products">
+    <router-outlet></router-outlet>
 
-      SmartCart
-
-    </a>
-
-    <div class="navbar-nav ms-auto">
-
-      <a
-        class="nav-link"
-        routerLink="/products">
-
-        Products
-
-      </a>
-
-      <a
-        class="nav-link"
-        routerLink="/cart">
-
-        Cart
-
-      </a>
-
-      <a
-        class="nav-link"
-        (click)="logout()">
-
-        Logout
-
-      </a>
-
-    </div>
-
-  </div>
-
-</nav>
-
-<router-outlet></router-outlet>
+</div>

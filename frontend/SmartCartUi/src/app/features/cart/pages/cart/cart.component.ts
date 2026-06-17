@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { Cart } from '../../models/cart.model';
 import { CartItem } from '../../models/cart-item.model';
+import { ToasterService } from 'src/app/shared/toaster/service/toaster.service';
 
 @Component({
   selector: 'app-cart',
@@ -12,11 +13,13 @@ export class CartComponent implements OnInit {
   cart!: Cart;
 
   constructor(
-    private cartService: CartService
+    private cartService: CartService,
+    private toasterService : ToasterService
   ) { }
 
   ngOnInit(): void {
     this.loadCart();
+    this.cartService.refreshCartCount();
   }
 
   loadCart(): void {
@@ -26,8 +29,9 @@ export class CartComponent implements OnInit {
       .subscribe({
 
         next: (response) => {
-
           this.cart = response.data;
+          console.log(JSON.stringify(this.cart));
+          this.cartService.refreshCartCount();
 
         },
 
@@ -55,7 +59,8 @@ export class CartComponent implements OnInit {
   }
   increaseQuantity(item : CartItem){
     item.quantity = item.quantity + 1;
-    this.updateQuantityInDb(item)
+    this.updateQuantityInDb(item);
+    
   }
   updateQuantityInDb(item:CartItem){
     this.cartService.updateQuantityInCart(item).subscribe({
@@ -67,16 +72,18 @@ export class CartComponent implements OnInit {
   decreaseQuantity(item:CartItem){
     if (item.quantity > 1) {
       item.quantity--;
-       this.updateQuantityInDb(item)
+       this.updateQuantityInDb(item);
+      
     }
   }
   removeItemFromCart(item:CartItem){
     this.cartService.removeItemFromCart(item).subscribe({
       next :(response)=>{
         this.loadCart();
+        
       },
       error:(error)=>{
-        alert(error)
+       this.toasterService.showWarningToast(error);
       }
     })
   }

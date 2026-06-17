@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CartService } from '../../cart/services/cart.service';
+import { CheckOutService } from '../services/checkout.service';
+import { OrdersModule } from '../../orders/orders.module';
+import { Cart } from '../../cart/models/cart.model';
+import { Router } from '@angular/router';
+import { OrderRequest } from '../../orders/models/orderRequest.model';
 
 @Component({
   selector: 'app-checkout',
@@ -7,36 +12,30 @@ import { CartService } from '../../cart/services/cart.service';
 })
 export class CheckoutComponent implements OnInit {
 
-  cart: any;
+  cart!: Cart;
+  orderRequest : OrderRequest= new OrderRequest();
+  
 
   constructor(
-    private cartService: CartService
+    private cartService: CartService,
+    private checkOutService : CheckOutService,
+    private router : Router
   ) { }
 
   ngOnInit(): void {
     this.loadCart();
   }
 
-  loadCart(): void {
-
-    this.cartService
-      .getCartByUserId()
-      .subscribe({
-
+  loadCart(): void 
+  {
+    this.cartService.getCartByUserId().subscribe({
         next: (response) => {
-
           this.cart = response.data;
-
         },
-
         error: (error) => {
-
           console.error(error);
-
         }
-
       });
-
   }
 
   getTotalAmount(): number {
@@ -52,13 +51,17 @@ export class CheckoutComponent implements OnInit {
     );
   }
 
-  placeOrder(): void {
-
+  
+  placeOrder(): void 
+  {
     console.log('Place Order Clicked');
-
-    // Next step:
-    // Call Order API
-
+    this.orderRequest ={
+      cartId : this.cart.id
+    };
+    this.checkOutService.placeOrder(this.orderRequest).subscribe(data=>{
+      
+      this.router.navigate(['/orders']);
+    });
   }
 
 }

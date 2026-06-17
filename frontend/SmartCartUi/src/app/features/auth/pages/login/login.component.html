@@ -3,7 +3,7 @@
   <div class="card login-card shadow">
 
     <div class="text-center mb-4">
-      <h2 class="fw-bold">SmartCart</h2>
+      <h2 class="fw-bold">Smart Cart</h2>
       <p class="text-muted mb-0">
         Sign in to continue shopping
       </p>
@@ -17,23 +17,30 @@
       <div class="mb-3">
 
         <label class="form-label">
-          Email
+          Email *
         </label>
 
         <input
-          type="email"
+          type="text"
           class="form-control"
           name="email"
           [(ngModel)]="loginDto.email"
           #email="ngModel"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
           required
           email>
 
         <small
           class="text-danger"
-          *ngIf="submitted && email.invalid">
+          *ngIf="submitted && email.errors?.['pattern']">
 
           Please enter a valid email
+        </small>
+        <small
+          class="text-danger"
+          *ngIf="submitted && email.errors?.['required']">
+
+          Email is required
         </small>
 
       </div>
@@ -43,7 +50,7 @@
       <div class="mb-3">
 
         <label class="form-label">
-          Password
+          Password *
         </label>
 
         <input

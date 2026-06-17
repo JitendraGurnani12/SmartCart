@@ -24,7 +24,6 @@ public class OrderService :IOrderService
         //step 1 Check cart Items
         var cart = await _context.Carts.Include(c => c.CartItems)
                                         .FirstOrDefaultAsync(c => c.Id == orderDto.CartId);
-        using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
         {
@@ -56,14 +55,65 @@ public class OrderService :IOrderService
             //do all changes into db
             await _context.SaveChangesAsync();
             //Transcation is committed
-            await transaction.CommitAsync();
 
             return order;
         }
         catch( Exception ex)
         {
-            await transaction.RollbackAsync();
+            // await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<List<OrderResponseDto>> GetOrderByUserId(string userId)
+    {
+        var orders = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+
+        return orders.Select(order => new OrderResponseDto
+        {
+            Id = order.Id,
+            CreatedAt = order.CreatedAt,
+
+            OrderItems = order.OrderItems.Select(item =>
+                new OrderItemResponseDto
+                {
+                    ProductId = item.ProductId,
+                    ProductName = item.Product.Name,
+                    Price = item.Product.Price,
+                    ImageUrl = item.Product.ImageUrl,
+                    Quantity = item.Quantity
+                }).ToList()
+
+        }).ToList();
+    }
+    public async Task<OrderResponseDto> GetOrderDetailById(int orderId,string userId)
+    {
+        
+        var order = await _context.Orders.Include(o => o.OrderItems)
+        .ThenInclude(oi => oi.Product)
+        .FirstOrDefaultAsync(o=>o.Id == orderId && o.UserId == userId);
+       
+        return   new OrderResponseDto
+        {
+             Id = order.Id,
+            CreatedAt = order.CreatedAt,
+
+            OrderItems = order.OrderItems.Select(item =>
+                new OrderItemResponseDto
+                {
+                    ProductId = item.ProductId,
+                    ProductName = item.Product.Name,
+                    Price = item.Product.Price,
+                    ImageUrl = item.Product.ImageUrl,
+                    Quantity = item.Quantity
+                }).ToList()
+
+        };
+
     }
 }

@@ -1,0 +1,16 @@
+.navbar {
+    height: 60px;
+}
+
+.navbar-brand {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.dropdown-toggle::after {
+    margin-left: 8px;
+}
+
+.btn-link {
+    text-decoration: none;
+}

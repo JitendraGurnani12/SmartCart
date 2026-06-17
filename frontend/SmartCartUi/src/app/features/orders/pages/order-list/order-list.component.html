@@ -1,0 +1,83 @@
+<div class="container mt-4">
+
+  <h2 class="mb-4 fw-bold">
+    My Orders
+  </h2>
+
+  <div *ngIf="orders.length > 0; else noOrders">
+
+    <div
+      class="card shadow-sm mb-3"
+      *ngFor="let order of orders">
+
+      <div class="card-body">
+
+        <div class="row align-items-center">
+
+          <div class="col-md-4">
+
+            <h5 class="mb-1">
+
+              Order #{{ order.id }}
+
+            </h5>
+
+            <small class="text-muted">
+
+              {{ order.createdAt | date:'medium' }}
+
+            </small>
+
+          </div>
+
+          <div class="col-md-3">
+
+            <strong>
+
+              Total Items:
+              {{ getTotalItems(order) }}
+
+            </strong>
+
+          </div>
+
+          <div class="col-md-3">
+
+            <span class="badge bg-success">
+
+              Placed
+
+            </span>
+
+          </div>
+
+          <div class="col-md-2 text-end">
+
+            <button
+              class="btn btn-outline-primary btn-sm" [routerLink]="['detail',order.id]">
+
+              View Details
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <ng-template #noOrders>
+
+    <div class="alert alert-info">
+
+      No orders found.
+
+    </div>
+
+  </ng-template>
+
+</div>

@@ -10,7 +10,7 @@ public class OrderRepository : IOrderRepository
     public async Task AddOrder(Order order)
     {
         await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
+        // await _context.SaveChangesAsync();
     }
 
     public async Task<Order> GetOrderById(int id)

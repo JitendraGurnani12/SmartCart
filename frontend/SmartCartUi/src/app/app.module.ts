@@ -5,16 +5,23 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { NavbarComponent } from './core/navbar/navbar.component';
+import { ToasterComponent } from './shared/toaster/toaster.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NavbarComponent,
+    ToasterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
      HttpClientModule,
+   
+    NgbModule
   ],
   providers: [{
     provide : HTTP_INTERCEPTORS,

@@ -28,20 +28,28 @@ public class AuthController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> Register(RegisterDto registerDto)
     {
-        var _user = new ApplicationUser
+        try
         {
-            UserName = registerDto.Email,
-            Email = registerDto.Email,
-            DisplayName = registerDto.DisplayName,
-            Addresses = registerDto.Addresses
-        };
-        var result = await _userManager.CreateAsync(_user, registerDto.Password);
+            
+            var _user = new ApplicationUser
+            {
+                UserName = registerDto.Email,
+                Email = registerDto.Email,
+                DisplayName = registerDto.DisplayName,
+                Addresses = registerDto.Addresses
+            };
+            var result = await _userManager.CreateAsync(_user, registerDto.Password);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
-        await _userManager.AddToRoleAsync(_user, "User");  //entry goes into AspNetUserRoles which have userId and roleId
-        return Ok(registerDto);
+            await _userManager.AddToRoleAsync(_user, "User");  //entry goes into AspNetUserRoles which have userId and roleId
+            return Ok(registerDto);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
     private async Task<string> GenerateToken(ApplicationUser user)
     {
@@ -76,18 +84,26 @@ public class AuthController : ControllerBase
     [Route("Login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
+        try
+        {
+            
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
-        if (user == null)
-            return Unauthorized("Invalid Email");
+            if (user == null)
+                return Unauthorized("Your entered email is incorrect");
 
-        var isValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+            var isValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-        if (!isValid)
-            return Unauthorized("Invalid Password");
+            if (!isValid)
+                return Unauthorized("Your entered password is incorrect");
 
-        var token = await GenerateToken(user);
-        return Ok(new { Token = token , user.Email, user.DisplayName});
+            var token = await GenerateToken(user);
+            return Ok(new { Token = token , user.Email, user.DisplayName});
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
 
     }
 

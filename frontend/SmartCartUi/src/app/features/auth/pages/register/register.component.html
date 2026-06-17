@@ -16,7 +16,7 @@
 
       <div class="mb-3">
         <label class="form-label">
-          Full Name (FirstName LastName)
+          Full Name (FirstName LastName) *
         </label>
 
         <input
@@ -25,6 +25,7 @@
           name="displayName"
           [(ngModel)]="registerDto.displayName"
           #displayName="ngModel"
+          maxlength="60"
           required>
 
         <small
@@ -39,7 +40,7 @@
 
       <div class="mb-3">
         <label class="form-label">
-          Email
+          Email *
         </label>
 
         <input
@@ -49,13 +50,20 @@
           [(ngModel)]="registerDto.email"
           #email="ngModel"
           required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
           email>
 
         <small
           class="text-danger"
-          *ngIf="submitted && email.invalid">
+          *ngIf="submitted && email.errors?.['pattern']">
 
-          Valid Email is required
+          Please enter a valid email
+        </small>
+        <small
+          class="text-danger"
+          *ngIf="submitted && email.errors?.['required']">
+
+          Email is required
         </small>
       </div>
 
@@ -63,7 +71,7 @@
 
       <div class="mb-3">
         <label class="form-label">
-          Password
+          Password *
         </label>
 
         <input
@@ -73,21 +81,40 @@
           [(ngModel)]="registerDto.password"
           #password="ngModel"
           required
-          minlength="6">
+          minlength="8"
+      maxlength="20"
+      pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$">
+
+          <!-- <small class="text-danger"
+          *ngIf="submitted && password.errors?.['required']">
+          Passowrd is required
+        </small>
 
         <small
           class="text-danger"
           *ngIf="submitted && password.invalid">
 
           Password must be at least 6 characters
-        </small>
+        </small> -->
+        <small class="text-danger" *ngIf="submitted && password.errors?.['required']">
+        Password is required.
+      </small>
+      <small class="text-danger" *ngIf="submitted && password.errors?.['minlength']">
+        Password must be at least 8 characters long.
+      </small>
+      <small class="text-danger" *ngIf="submitted && password.errors?.['maxlength']">
+        Password cannot exceed 20 characters.
+      </small>
+      <small class="text-danger" *ngIf="submitted && password.errors?.['pattern']">
+        Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+      </small>
       </div>
 
       <!-- Address -->
 
       <div class="mb-3">
         <label class="form-label">
-          Address
+          Address *
         </label>
 
         <textarea
@@ -96,6 +123,7 @@
           name="addresses"
           [(ngModel)]="registerDto.addresses"
           #addresses="ngModel"
+          maxlength="150"
           required>
         </textarea>
 

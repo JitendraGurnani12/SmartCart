@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RegisterRequest } from '../../models/register-request.model';
 import { AuthApiService } from '../../services/auth-api.service';
 import { Router } from '@angular/router';
+import { ToasterService } from 'src/app/shared/toaster/service/toaster.service';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,8 @@ registerDto: RegisterRequest = {
     addresses: ''
   };
   constructor(private authApiService : AuthApiService,
-    private router : Router
+    private router : Router,
+    private toasterService : ToasterService
   ){
 
   }
@@ -42,9 +44,15 @@ registerDto: RegisterRequest = {
 
     console.log('Register Request', this.registerDto);
     this.authApiService.register(this.registerDto).subscribe(data=>{
-      alert("Register successfully");
+     
+      this.toasterService.showSuccessToast("Registered Successfully");
       this.router.navigate(['auth/login']);
-    })
+    },
+    (error)=>{
+      this.toasterService.showWarningToast(error);
+    }
+  
+  );
 
     // API call later
   }
