@@ -46,7 +46,6 @@ export class LoginComponent {
       this.router.navigate(['/products']);
     },
       (error) => {
-        debugger;
         this.toasterService.showWarningToast(error.error);
       })
   }

@@ -16,7 +16,6 @@ export class AppComponent {
   }
   ngOnInit() {
     this.authService.isUserLogedInObservable.subscribe(status=>{
-      debugger;
       this.isUserLogedIn = status;
     })
   }
