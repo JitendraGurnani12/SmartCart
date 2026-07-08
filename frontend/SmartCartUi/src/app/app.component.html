@@ -2,7 +2,8 @@
 <app-navbar *ngIf="isUserLogedIn"></app-navbar>
 <app-toaster></app-toaster>
 <div class="container-fluid">
-
+    <app-spinner *ngIf="isLoading">
+    </app-spinner>
     <router-outlet></router-outlet>
 
 </div>

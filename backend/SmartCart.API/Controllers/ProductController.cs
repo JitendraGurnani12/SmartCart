@@ -34,12 +34,12 @@ public class ProductController : ControllerBase
     [HttpGet]
     // [AllowAnonymous]
     [Route("GetAll")]
-    public async Task< IActionResult> GetAllProduct(int page,int pageSize)
+    public async Task< IActionResult> GetAllProduct(int page,int pageSize=8,string? search="" , int? categoryId=null)
     {
         try
         {
             _logger.LogInformation("Start Fetching the All Products From Controller ");
-            var allProduct = await _iProductService.GetAllAsync(page,pageSize);
+            var allProduct = await _iProductService.GetAllAsync(page, pageSize, search, categoryId );
             
             _logger.LogInformation("End Fetching the All Products From Controller ");
             return Ok(new ApiResponse<PageResponse<ProductDto>>
@@ -76,7 +76,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = "Seller")]
     [Route("Add")]
     public async Task<IActionResult> AddNewProduct(ProductDto productDto)
     {
@@ -99,7 +99,6 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Roles = "Admin,Manager")]
     [Route("Update")]
     public async Task<IActionResult> UpdateProduct(ProductDto productDto)
     {
@@ -121,7 +120,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete]
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,Seller")]
     [Route("Delete")]
     public async Task<IActionResult> DeleteProduct(int id)
     {

@@ -15,6 +15,7 @@ public class CartController : ControllerBase
         }
 
         [HttpGet]
+        [Authorize(Roles = "Customer")]
         [Route("Get")]
         public async Task<IActionResult> Get()
         {
@@ -23,6 +24,7 @@ public class CartController : ControllerBase
         }
 
         [HttpGet]
+        [Authorize(Roles = "Customer")]
         [Route("GetCartByUserId")]
         public async Task<IActionResult> GetCartByUserId()
         {
@@ -47,6 +49,7 @@ public class CartController : ControllerBase
         }
 
         [HttpPost]
+        [Authorize(Roles = "Customer")]
         [Route("Add")]
         public async Task<IActionResult> AddItemIntoCart(CartItemDto cartItemDto)
         {
@@ -64,6 +67,7 @@ public class CartController : ControllerBase
         // }
 
         [HttpDelete]
+        [Authorize(Roles = "Customer")]
         [Route("RemoveItem")]
         public async Task<IActionResult> RemoveItemFromCart(CartItemDto cartItemDto)
         {
@@ -73,6 +77,7 @@ public class CartController : ControllerBase
                 return Ok();
         }
         [HttpPut]
+        [Authorize(Roles = "Customer")]
         [Route("UpdateQuantity")]
         public async Task<IActionResult> UpdateQuantityInCart(UpdateCartItemDto dto)
         {

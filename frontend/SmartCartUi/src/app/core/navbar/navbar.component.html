@@ -13,44 +13,159 @@
 
     <div class="collapse navbar-collapse" id="navbarContent">
 
-        <!-- Navigation Menu (Visible after Login) -->
+    <!-- Navigation Menu -->
         <ul class="navbar-nav ms-4" *ngIf="isUserLogedIn">
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+            <!-- Dashboard (Admin & Seller) -->
+            <li class="nav-item"
+                *ngIf="this.authService.isAdmin()">
+
+                <a class="nav-link"
+                routerLink="/dashboard"
+                routerLinkActive="active">
+
                     Dashboard
+
                 </a>
+
+            </li>
+            <li class="nav-item"
+                *ngIf="this.authService.isSeller()">
+
+                <a class="nav-link"
+                routerLink="seller/dashboard"
+                routerLinkActive="active">
+
+                    Dashboard
+
+                </a>
+
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/products" routerLinkActive="active">
+            <!-- Customer -->
+            <li class="nav-item"
+                *ngIf="this.authService.isCustomer()">
+
+                <a class="nav-link"
+                routerLink="/products"
+                routerLinkActive="active">
+
                     Products
+
                 </a>
+
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/categories" routerLinkActive="active">
-                    Categories
-                </a>
-            </li>
+            <li class="nav-item"
+                *ngIf="this.authService.isCustomer()">
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/orders" routerLinkActive="active">
+                <a class="nav-link"
+                routerLink="/orders"
+                routerLinkActive="active">
+
                     Orders
+
                 </a>
+
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/customers" routerLinkActive="active">
-                    Customers
-                </a>
-            </li>
+            <li class="nav-item"
+                *ngIf="this.authService.isCustomer()">
 
-            <li class="nav-item">
-                <a class="nav-link" routerLink="/cart" routerLinkActive="active">
+                <a class="nav-link"
+                routerLink="/cart"
+                routerLinkActive="active">
+
                     Cart
-                    <span class="badge bg-warning text-dark">{{cartBadageCount}}</span>
+
+                    <span class="badge bg-warning text-dark">
+
+                        {{ cartBadageCount }}
+
+                    </span>
+
                 </a>
+
+            </li>
+
+            <!-- Seller -->
+            <li class="nav-item"
+                *ngIf="this.authService.isSeller()">
+
+                <a class="nav-link"
+                routerLink="/seller/my-Products"
+                routerLinkActive="active">
+
+                    My Products
+
+                </a>
+
+            </li>
+
+            <li class="nav-item"
+                *ngIf="this.authService.isSeller()">
+
+                <a class="nav-link"
+                routerLink="/seller/orders"
+                routerLinkActive="active">
+
+                    Seller Orders
+
+                </a>
+
+            </li>
+
+            <!-- Admin -->
+            <li class="nav-item"
+                *ngIf="this.authService.isAdmin()">
+
+                <a class="nav-link"
+                routerLink="/admin/products"
+                routerLinkActive="active">
+
+                    Manage Products
+
+                </a>
+
+            </li>
+
+            <li class="nav-item"
+                *ngIf="this.authService.isAdmin()">
+
+                <a class="nav-link"
+                routerLink="/admin/categories"
+                routerLinkActive="active">
+
+                    Manage Categories
+
+                </a>
+
+            </li>
+
+            <li class="nav-item"
+                *ngIf="this.authService.isAdmin()">
+
+                <a class="nav-link"
+                routerLink="/admin/sellers"
+                routerLinkActive="active">
+
+                    Manage Sellers
+
+                </a>
+
+            </li>
+
+            <li class="nav-item"
+                *ngIf="this.authService.isAdmin()">
+
+                <a class="nav-link"
+                routerLink="/admin/customers"
+                routerLinkActive="active">
+
+                    Manage Customers
+
+                </a>
+
             </li>
 
         </ul>
@@ -58,25 +173,15 @@
         <!-- Right Side -->
         <div class="ms-auto d-flex align-items-center">
 
-            <!-- Guest Menu -->
-            <!-- <div *ngIf="!isUserLogedIn">
-
-                <a class="btn btn-outline-light me-2" routerLink="/login">
-                    Login
-                </a>
-
-                <a class="btn btn-light" routerLink="/register">
-                    Register
-                </a>
-
-            </div> -->
-
-            <!-- Logged In Menu -->
-            <div class="d-flex align-items-center" *ngIf="isUserLogedIn">
+            <div
+                class="d-flex align-items-center"
+                *ngIf="isUserLogedIn">
 
                 <!-- Notification -->
                 <button class="btn btn-link text-white me-3">
+
                     <i class="bi bi-bell fs-5"></i>
+
                 </button>
 
                 <!-- User Dropdown -->
@@ -88,34 +193,59 @@
                         data-bs-toggle="dropdown">
 
                         <i class="bi bi-person-circle me-1"></i>
+
                         {{ logedInUserDisplayName }}
+
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end">
 
                         <li>
-                            <a class="dropdown-item" routerLink="/profile">
+
+                            <a
+                                class="dropdown-item"
+                                routerLink="/profile">
+
                                 <i class="bi bi-person me-2"></i>
+
                                 Profile
+
                             </a>
+
                         </li>
 
                         <li>
-                            <a class="dropdown-item" routerLink="/settings">
+
+                            <a
+                                class="dropdown-item"
+                                routerLink="/settings">
+
                                 <i class="bi bi-gear me-2"></i>
+
                                 Settings
+
                             </a>
+
                         </li>
 
                         <li>
+
                             <hr class="dropdown-divider">
+
                         </li>
 
                         <li>
-                            <a class="dropdown-item text-danger" (click)="logout()">
+
+                            <a
+                                class="dropdown-item text-danger"
+                                (click)="logout()">
+
                                 <i class="bi bi-box-arrow-right me-2"></i>
+
                                 Logout
+
                             </a>
+
                         </li>
 
                     </ul>

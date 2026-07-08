@@ -13,4 +13,7 @@ public class Product : BaseEntity
     //Reference Navigation -Each Product belongs to one Category
     public Category Category{ get; set; }
     // public ICollection<ProductImage> ProductImages  {  get;  set;  }
+    public string SellerId { get; set; }
+
+    public ApplicationUser Seller { get; set; }
 }

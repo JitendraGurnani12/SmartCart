@@ -48,8 +48,8 @@ registerDto: RegisterRequest = {
       this.toasterService.showSuccessToast("Registered Successfully");
       this.router.navigate(['auth/login']);
     },
-    (error)=>{
-      this.toasterService.showWarningToast(error);
+    (ex)=>{
+      this.toasterService.showWarningToast(ex.error.message);
     }
   
   );

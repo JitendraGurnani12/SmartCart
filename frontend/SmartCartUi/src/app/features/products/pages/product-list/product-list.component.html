@@ -1,21 +1,58 @@
 <div class="container mt-4">
 
-  <h2 class="mb-4">
-    Products
-  </h2>
+  <!-- Heading & Search -->
+  <div class="row align-items-center mb-4">
 
+    <div class="col-md-6">
+      <h2 class="mb-0">Products</h2>
+    </div>
+
+    <div class="col-md-6">
+
+      <div class="input-group">
+
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+
+        <input type="text" class="form-control" placeholder="Search products..." [(ngModel)]="searchText"
+          (input)="onSearch()">
+
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row mb-4">
+
+    <div class="col-md-4">
+
+      <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+
+        <option [value]="0">
+          All Categories
+        </option>
+
+        <option *ngFor="let category of categories" [value]="category.id">
+
+          {{ category.name }}
+
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+  <!-- Product Grid -->
   <div class="row">
 
-    <div
-      class="col-lg-3 col-md-4 col-sm-6 mb-4"
-      *ngFor="let product of products">
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let product of products">
 
       <div class="card h-100 shadow-sm product-card">
 
-        <img
-          [src]="product.imageUrl"
-          [alt]="product.name"
-          class="card-img-top product-image">
+        <img [src]="product.imageUrl" class="card-img-top product-image">
 
         <div class="card-body">
 
@@ -24,10 +61,8 @@
           </h5>
 
           <p class="card-text text-muted small">
-            {{ product?.description | slice:0:7 }}
-            <span *ngIf="product?.description?.length! > 7">
-              ...
-            </span>
+            {{ product.description | slice:0:70 }}
+            <span *ngIf="product.description.length > 70">...</span>
           </p>
 
           <h4 class="text-success fw-bold">
@@ -41,16 +76,11 @@
           <div class="d-grid gap-2">
 
             <button class="btn btn-outline-primary" [routerLink]="['/products', product.id]">
-            
               View Details
-            
             </button>
 
-            <button
-              class="btn btn-success" (click)="addToCart(product.id)">
-
+            <button class="btn btn-success" (click)="addToCart(product.id)">
               Add To Cart
-
             </button>
 
           </div>
@@ -62,5 +92,38 @@
     </div>
 
   </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="page > 1">
+
+    <ul class="pagination justify-content-center mt-4">
+
+      <li class="page-item" [class.disabled]="page==1">
+
+        <button class="page-link" (click)="changePage(page-1)">
+          Previous
+        </button>
+
+      </li>
+
+      <li class="page-item" *ngFor="let p of pageNumbers" [class.active]="page==p">
+
+        <button class="page-link" (click)="changePage(p)">
+          {{p}}
+        </button>
+
+      </li>
+
+      <li class="page-item" [class.disabled]="page==totalPages">
+
+        <button class="page-link" (click)="changePage(page+1)">
+          Next
+        </button>
+
+      </li>
+
+    </ul>
+
+  </nav>
 
 </div>

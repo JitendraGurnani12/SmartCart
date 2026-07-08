@@ -18,8 +18,8 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(page: number, pageSize: number) {
-    return this.http.get<ApiResponse<PageResponse<Product>>>(`${this.baseUrl}product/GetAll?page=${page}&pageSize=${pageSize}`);
+  getProducts(page: number, pageSize: number,search:string = '',categoryId : number) {
+    return this.http.get<ApiResponse<PageResponse<Product>>>(`${this.baseUrl}product/GetAll?page=${page}&pageSize=${pageSize}&search=${search}&categoryId=${categoryId}`);
   }
   getProductById(productId : number){
     return this.http.get<Product>(`${this.baseUrl}product/GetById?productId=${productId}`);

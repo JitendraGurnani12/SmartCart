@@ -111,7 +111,7 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
     //     _logger.LogInformation("End Fetching the All Products From Product Serevice");
     //     return productDtoList;
     // }
-    public async Task<PageResponse<ProductDto>> GetAllAsync(int page, int pageSize)
+    public async Task<PageResponse<ProductDto>> GetAllAsync(int page, int pageSize, string? search,int? categoryId)
     {
         _logger.LogInformation("Fetching products");
 
@@ -119,6 +119,19 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
         pageSize = pageSize > 50 ? 50 : pageSize;
 
         var query = _productRepo.GetProductQuery();
+        // Apply search
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            search = search.Trim();
+
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(search.ToLower()) ||
+                p.Description.ToLower().Contains(search.ToLower()));
+        }
+        if (categoryId.HasValue && categoryId.Value > 0)
+        {
+            query = query.Where(p =>p.CategoryId == categoryId.Value); 
+        }
 
         var totalCount = await query.CountAsync<Product>();
 

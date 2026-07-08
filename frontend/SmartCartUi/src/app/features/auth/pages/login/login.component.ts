@@ -4,6 +4,8 @@ import { AuthApiService } from '../../services/auth-api.service';
 import { Route, Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth-service';
 import { ToasterService } from 'src/app/shared/toaster/service/toaster.service';
+import { jwtDecode } from 'jwt-decode';
+import { Role } from 'src/app/models/roles.model';
 
 @Component({
   selector: 'app-login',
@@ -41,17 +43,36 @@ export class LoginComponent {
     this.authApiService.login(this.loginDto).subscribe(data => {
 
       this.authService.setToken(data.token);
+      const role = this.getRoleFromToken();
+      localStorage.setItem('role',role);
+      if(role == Role.Seller){
+        this.router.navigateByUrl('/seller')
+      }
+      else if(role == Role.Admin){
 
+      }
+      else{
+        this.router.navigate(['/products']);
+      }
       localStorage.setItem('logedInUserDisplayName', data.displayName);
-      this.router.navigate(['/products']);
     },
-      (error) => {
-        this.toasterService.showWarningToast(error.error);
+      (ex) => {
+        this.toasterService.showWarningToast(ex.error.message);
       })
   }
 
   logout() {
    this.authService.logout();
    this.router.navigate(['/auth/login']);
+  }
+  getRoleFromToken(){
+    const token = this.authService.getToken();
+    if(!token){
+      return '';
+    }
+    const decoded :any = jwtDecode(token);
+    return decoded[
+    'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+    ];
   }
 }

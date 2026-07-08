@@ -28,8 +28,8 @@ public class AuthController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> Register(RegisterDto registerDto)
     {
-        try
-        {
+        // try
+        // {
             
             var _user = new ApplicationUser
             {
@@ -40,16 +40,27 @@ public class AuthController : ControllerBase
             };
             var result = await _userManager.CreateAsync(_user, registerDto.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            await _userManager.AddToRoleAsync(_user, "User");  //entry goes into AspNetUserRoles which have userId and roleId
-            return Ok(registerDto);
-        }
-        catch (Exception ex)
+        if (!result.Succeeded)
         {
-            return BadRequest(ex.Message);
+            // Sabse simple tarika: Saare errors ko jod kar 1 plain text string bana lo
+            var errorString = string.Join(", ", result.Errors.Select(e => e.Description));
+
+            // Direct string return karo, isse frontend ko koi complex object nahi milega
+            return BadRequest(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = errorString,
+                    Data = null
+                });
         }
+
+        await _userManager.AddToRoleAsync(_user, "Customer");  //entry goes into AspNetUserRoles which have userId and roleId
+            return Ok(registerDto);
+        // }
+        // catch (Exception ex)
+        // {
+        //     return BadRequest(ex);
+        // }
     }
     private async Task<string> GenerateToken(ApplicationUser user)
     {
@@ -84,26 +95,36 @@ public class AuthController : ControllerBase
     [Route("Login")]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
-        try
-        {
+        // try
+        // {
             
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
             if (user == null)
-                return Unauthorized("Your entered email is incorrect");
+                return Unauthorized(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Your entered email is incorrect",
+                    Data = null
+                });
 
             var isValid = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
             if (!isValid)
-                return Unauthorized("Your entered password is incorrect");
+                return Unauthorized(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Your entered password is incorrect",
+                    Data = null
+                });
 
             var token = await GenerateToken(user);
             return Ok(new { Token = token , user.Email, user.DisplayName});
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        // }
+        // catch (Exception ex)
+        // {
+        //     return BadRequest(ex);
+        // }
 
     }
 

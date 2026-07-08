@@ -36,10 +36,12 @@ public class ExceptionMiddleware
                     break;
             }
 
-            await context.Response.WriteAsJsonAsync(new
+            await context.Response.WriteAsJsonAsync(new ApiResponse<object>
             {
-                error = ex.Message
-            }.ToString());
+                Success = false,
+                Message = ex.Message,
+                Data = null
+            });
         }
     }
 }
