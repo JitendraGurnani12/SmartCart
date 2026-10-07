@@ -1,0 +1,25 @@
+Customer
+    |
+    | Browse Products
+    | Add to Cart
+    | Place Order
+    |
+-----------------------------------------
+Seller
+    |
+    | Dashboard
+    | My Products
+    | Add Product
+    | Edit Product
+    | Delete Product
+    | View Orders
+    |
+-----------------------------------------
+Admin
+    |
+    | Manage Users
+    | Manage Categories
+    | Manage Sellers
+    | Dashboard
+
+Ye industry jaisa flow hai.

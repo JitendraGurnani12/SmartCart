@@ -7,4 +7,5 @@ public class ProductDto
     public string Description { get; set; }
     public int CategoryId { get; set; }
     public string UserId { get; set; }
+    public string SellerId { get; set; }
 }

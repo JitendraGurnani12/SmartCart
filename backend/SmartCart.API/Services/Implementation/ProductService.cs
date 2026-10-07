@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -7,6 +8,7 @@ public class ProductService : IProductService
     private readonly ICategoryRepository _categoryRepo;
     private readonly ILogger<ProductService> _logger;
     private readonly IMemoryCache _cache;
+    private readonly IWebHostEnvironment _environment;
     /*
     For My Understanding I have copied from Googlegemini ,jsut for reading............
     
@@ -88,10 +90,11 @@ Lekin waiter (thread) pause nahi hua, wo doosre customers ko paani de raha hai.
 Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se resume ho jayega jahan pause hua tha.
         */
     public ProductService(IProductRepository productRepo,ICategoryRepository categoryRepo, ILogger<ProductService> logger,
-    IMemoryCache cache)
+    IWebHostEnvironment environment,IMemoryCache cache)
     {
         _productRepo = productRepo;
         _categoryRepo = categoryRepo;
+        _environment = environment;
         _logger = logger;
         _cache = cache;
     }
@@ -115,7 +118,9 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
     {
         _logger.LogInformation("Fetching products");
 
-        page = page <= 0 ? 1 : page;
+        // page = page <= 0 ? 1 : page;
+        // pageSize = pageSize > 50 ? 50 : pageSize;
+        pageSize = pageSize <= 0 ? 8 : pageSize;
         pageSize = pageSize > 50 ? 50 : pageSize;
 
         var query = _productRepo.GetProductQuery();
@@ -147,6 +152,7 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
             Price = p.Price,
             Description = p.Description,
             ImageUrl = p.ImageUrl,
+            SellerId = p.SellerId,
             CategoryId = p.CategoryId
         }).ToList();
         foreach(var product in productDtoList)
@@ -179,6 +185,8 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
+                SellerId = product.SellerId,
+                CategoryId = product.CategoryId,
                 Description = product.Description,
                 ImageUrl = $"http://localhost:5096{product.ImageUrl}"
             };
@@ -190,6 +198,8 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
     public async Task AddAsync(ProductDto productDto)
     {
         _logger.LogInformation("Start Add Product in Method of Product Serevice");
+
+        
         if (!await IsCategoryExist(productDto.CategoryId))
         {
             _logger.LogError("Category Not Exist exception occur in add product");
@@ -202,6 +212,8 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
             Description = productDto.Description,
             CategoryId = productDto.CategoryId,
             CreatedBy = productDto.UserId,
+            ImageUrl = productDto.ImageUrl,
+            SellerId = productDto.SellerId,
             CreatedOn = DateTime.UtcNow,
         };
         _logger.LogInformation("End Of AddProduct method of Product Serevice");
@@ -211,40 +223,172 @@ Jaise hi khana ready hoga, waiter wapas aayega aur aapka order (method) wahi se 
     public async Task UpdateAsync(ProductDto productDto)
     {
         _logger.LogInformation("Start Update Product in Method of Product Serevice");
+        var product = await _productRepo.GetByIdAsync(productDto.Id);
+        
+        if (product == null)
+        {
+            throw new KeyNotFoundException("Product does not exist");
+        }
+         if (product.SellerId != productDto.SellerId)
+        {
+            throw new UnauthorizedAccessException(
+                "You are not authorized to update this product.");
+        }
         if (!await IsCategoryExist(productDto.CategoryId))
         {
             _logger.LogError("Category Not Exist exception occur in update product");
             throw new Exception("Category does not exist");
         }
-        var product = new Product
-        {
-            Id = productDto.Id,
-            Name = productDto.Name,
-            Price = productDto.Price,
-            Description = productDto.Description,
-            CategoryId = productDto.CategoryId,
-            ModifiedBy = productDto.UserId,
-            ModifiedOn = DateTime.UtcNow,
-        };
-         _logger.LogInformation("End Update Product in Method of Product Serevice");
+        // product = new Product
+        // {
+        //     Id = productDto.Id,
+        //     Name = productDto.Name,
+        //     Price = productDto.Price,
+        //     Description = productDto.Description,
+        //     CategoryId = productDto.CategoryId,
+        //     ModifiedBy = productDto.UserId,
+        //     ModifiedOn = DateTime.UtcNow,
+        // };
+        product.Name = productDto.Name;
+        product.Price = productDto.Price;
+        product.Description = productDto.Description;
+        product.CategoryId = productDto.CategoryId;
+        product.ImageUrl = productDto.ImageUrl;
+
+        product.ModifiedBy = productDto.UserId;
+        product.ModifiedOn = DateTime.UtcNow;
+        _logger.LogInformation("End Update Product in Method of Product Serevice");
         await _productRepo.UpdateAsync(product);
         _cache.Remove($"product_{product.Id}");
     }
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id,string userId,bool isAdmin)
     {
         var product = await  _productRepo.GetByIdAsync(id);
+
         if(product == null)
         {
             _logger.LogError("Product Not Exist exception occur in delete product");
             throw new KeyNotFoundException("Product does not exist");
         }
+        if (!isAdmin && product.SellerId != userId)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to delete this product.");
+        }
+        var imageUrl = product.ImageUrl;
         product.IsDeleted = true;
         await _productRepo.UpdateAsync(product);
+        
         _cache.Remove($"product_{product.Id}");
+         DeleteProductImage(imageUrl);
     }
     public async Task<bool> IsCategoryExist(int categoryId)
     {
         var category = await _categoryRepo.GetByIdAsync(categoryId);
         return category != null;
+    }
+
+    public async Task<PageResponse<ProductDto>> GetSellerProductsAsync(string sellerId,int page,int pageSize,string? search, int? categoryId)
+    {
+        var query = _productRepo
+            .GetProductQuery()
+            .Where(p => p.SellerId == sellerId);
+
+        // page = page <= 0 ? 1 : page;
+        // pageSize = pageSize > 50 ? 50 : pageSize;
+        pageSize = pageSize <= 0 ? 8 : pageSize;
+        pageSize = pageSize > 50 ? 50 : pageSize;
+        
+        // Apply search
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            search = search.Trim();
+
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(search.ToLower()) ||
+                p.Description.ToLower().Contains(search.ToLower()));
+        }
+        if (categoryId.HasValue && categoryId.Value > 0)
+        {
+            query = query.Where(p =>p.CategoryId == categoryId.Value); 
+        }
+
+        var totalCount = await query.CountAsync<Product>();
+
+        var products = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var productDtoList = products.Select(p => new ProductDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Price = p.Price,
+            Description = p.Description,
+            ImageUrl = p.ImageUrl,
+            SellerId = p.SellerId,
+            CategoryId = p.CategoryId
+        }).ToList();
+        foreach(var product in productDtoList)
+        {
+            product.ImageUrl = $"http://localhost:5096{product.ImageUrl}";
+        }
+
+        _logger.LogInformation("Products fetched successfully");
+
+        return new PageResponse<ProductDto>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalRecords = totalCount,
+            Data = productDtoList
+        }; 
+    }
+
+    public async Task<ProductDto> GetMyProductByIdAsync(string sellerId,int id)
+    {
+        
+            var product = await _productRepo.GetProductQueryById(id).Where(p => p.SellerId == sellerId).FirstOrDefaultAsync();
+
+            
+            if(product == null)
+            {
+                throw new Exception("Product not found or you are not authorize to update this product");
+            }
+            var productDto = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                SellerId = product.SellerId,
+                Description = product.Description,
+                ImageUrl = $"http://localhost:5096{product.ImageUrl}"
+            };
+            
+
+       
+        return productDto;
+    }
+    private void DeleteProductImage(string? imageUrl) 
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return;
+        }
+        var fileName =  Path.GetFileName(imageUrl);
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            return;
+        }
+        var uploadsFolder =  Path.Combine( _environment.WebRootPath,"uploads","products");
+
+        var filePath = Path.Combine(uploadsFolder,fileName );
+
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+
+            _logger.LogInformation("Product image deleted: {FilePath}",filePath);
+        }
     }
 }

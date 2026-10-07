@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class SellerController : ControllerBase
 {
-    
-    public SellerController()
+    private readonly IOrderService _orderService;
+    public SellerController(IOrderService orderService)
     {
-        
+         _orderService = orderService; 
     }
     
     [Authorize(Roles = "Seller")]
@@ -20,4 +20,35 @@ public class SellerController : ControllerBase
     {
         return Ok();
     }
+
+    // [HttpGet("GetSellerOrders")]
+    // [Authorize(Roles = "Seller")]
+    // public async Task<IActionResult> GetSellerOrders()
+    // {
+    //     try
+    //     {
+    //         var sellerId =
+    //             User.FindFirstValue(
+    //                 ClaimTypes.NameIdentifier
+    //             );
+
+    //         // var orders =
+    //         //     // await _orderService.GetSellerOrders(
+    //         //     //     sellerId
+    //         //     // );
+
+    //         return Ok(
+    //             new ApiResponse<List<OrderResponseDto>>
+    //             {
+    //                 Success = true,
+    //                 Message = "Seller orders fetched successfully",
+    //                 Data = orders
+    //             }
+    //         );
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return BadRequest(ex.Message);
+    //     }
+    // }
 }

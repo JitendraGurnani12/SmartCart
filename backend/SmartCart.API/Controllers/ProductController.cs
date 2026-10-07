@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _iProductService;
+    private readonly IFileService _fileService;
     private readonly ILogger<ProductController> _logger;
    //ILogger is built-in class for logging the information in dotnet core ,
    // //we just need to inject it in controller of class where we want logging
@@ -25,10 +26,11 @@ public class ProductController : ControllerBase
    //Serilog logprovider use for file logging
    //*********** 
 
-    public ProductController(IProductService iProductService, ILogger<ProductController> logger)
+    public ProductController(IProductService iProductService, ILogger<ProductController> logger,IFileService fileService)
     {
         _iProductService = iProductService;
         _logger = logger;
+        _fileService = fileService;
     }
 
     [HttpGet]
@@ -78,11 +80,27 @@ public class ProductController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Seller")]
     [Route("Add")]
-    public async Task<IActionResult> AddNewProduct(ProductDto productDto)
+    public async Task<IActionResult> AddNewProduct( [FromForm] ProductDto productDto,IFormFile? image)
     {
         try
         {
-            productDto.UserId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var userId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            productDto.UserId = userId;
+            productDto.SellerId = userId;
+
+            if (image != null)
+            {
+                productDto.ImageUrl =
+                    await _fileService.SaveFileAsync(
+                        image,
+                        "products"
+                    );
+            }
+
             await _iProductService.AddAsync(productDto);
             return Ok(new ApiResponse<ProductDto>()
             {
@@ -99,12 +117,27 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Roles = "Seller")]
     [Route("Update")]
-    public async Task<IActionResult> UpdateProduct(ProductDto productDto)
+    public async Task<IActionResult> UpdateProduct( [FromForm] ProductDto productDto,IFormFile? image)
     {
         try
         {
-            productDto.UserId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var userId =User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            productDto.UserId = userId;
+            productDto.SellerId = userId;
+            if (image != null)
+            {
+                productDto.ImageUrl =
+                    await _fileService.SaveFileAsync(
+                        image,
+                        "products"
+                    );
+            }
             await _iProductService.UpdateAsync(productDto);
             return Ok(new ApiResponse<ProductDto>()
             {
@@ -121,20 +154,66 @@ public class ProductController : ControllerBase
 
     [HttpDelete]
     [Authorize(Roles = "Admin,Seller")]
-    [Route("Delete")]
+    [Route("Delete/{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
         try
         {
-            
-            await _iProductService.DeleteAsync(id);
-            return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = User.IsInRole("Admin");
+            await _iProductService.DeleteAsync( id, userId,isAdmin);
+            // await _iProductService.DeleteAsync(id);
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Product deleted successfully",
+                Data = null
+            });
         }
         catch (Exception ex)
-        {
+        {   
+            _logger.LogError(ex,"Error occurred while deleting product {ProductId}", id);
             return BadRequest(ex.Message);
         }
     }
 
-    
+    [HttpGet]
+    [Authorize(Roles = "Seller")]
+    [Route("GetMyProducts")]
+    public async Task<IActionResult> GetMyProducts( int page, int pageSize = 8, string? search = "",  int? categoryId = null)
+    {
+        var sellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var products = await _iProductService.GetSellerProductsAsync(  sellerId,page, pageSize,search,categoryId);
+
+        return Ok(new ApiResponse<PageResponse<ProductDto>>
+        {
+            Success = true,
+            Message = "Seller products fetched successfully.",
+            Data = products
+        });
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Seller")]
+    [Route("GetMyProductById")]
+    public async Task< IActionResult> GetMyProductById(int productId)
+    {
+        try
+        {
+            _logger.LogInformation("Start Fetching the Product Detail From Controller ");
+            var sellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var productDetail = await _iProductService.GetMyProductByIdAsync(sellerId,productId);
+            
+            _logger.LogInformation("End Fetching the Product Detail From Controller ");
+            return Ok(productDetail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error occurs while  Fetching the Product Detail From Controller ");
+            return BadRequest(ex.Message);
+        }
+    }
+
+
 }

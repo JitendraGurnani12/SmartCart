@@ -5,5 +5,6 @@ export interface Product {
   price: number;
   imageUrl: string;
   categoryId: number;
-  userId : number;
+  // userId : number;
+  sellerId : string;
 }

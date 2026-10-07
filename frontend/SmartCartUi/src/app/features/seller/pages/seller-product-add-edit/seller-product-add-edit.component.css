@@ -1,0 +1,15 @@
+.card {
+  border: none;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.btn {
+  min-width: 100px;
+}

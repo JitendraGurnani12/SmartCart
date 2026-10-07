@@ -1,18 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { MyProductsComponent } from './pages/my-products/my-products.component';
 import { AuthGuard } from 'src/app/core/guards/auth.guard';
-import { ProductformComponent } from './pages/productform/productform.component';
+import { SellerMyProductListComponent } from './pages/my-products/my-products.component';
+import { SellerProductAddEditComponent } from './pages/seller-product-add-edit/seller-product-add-edit.component';
 
 const routes: Routes = [
     {
     path: '',
     children: [
       { path: 'dashboard', component: DashboardComponent, },
-      { path: 'my-Products', component: MyProductsComponent, },
-      { path: 'product/add',component: ProductformComponent },
-      { path: 'product/edit/:id',component: ProductformComponent },
+      { path: 'my-Products', component: SellerMyProductListComponent, },
+      
       { path: '', redirectTo: 'dashboard', pathMatch: 'full', }
       ]
     }

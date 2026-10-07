@@ -23,7 +23,7 @@ public class OrderService :IOrderService
     {
         //step 1 Check cart Items
         var cart = await _context.Carts.Include(c => c.CartItems)
-                                        .FirstOrDefaultAsync(c => c.Id == orderDto.CartId);
+                                        .FirstOrDefaultAsync(c => c.Id == orderDto.CartId && c.UserId == orderDto.UserId);
 
         try
         {
@@ -97,7 +97,13 @@ public class OrderService :IOrderService
         var order = await _context.Orders.Include(o => o.OrderItems)
         .ThenInclude(oi => oi.Product)
         .FirstOrDefaultAsync(o=>o.Id == orderId && o.UserId == userId);
-       
+        if (order == null)
+        {
+            throw new KeyNotFoundException(
+                "Order does not exist."
+            );
+        }
+
         return   new OrderResponseDto
         {
              Id = order.Id,

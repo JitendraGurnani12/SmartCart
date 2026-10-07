@@ -1,0 +1,313 @@
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="mb-1">
+        {{ isEditMode
+          ? 'Edit Product'
+          : 'Add Product'
+        }}
+      </h3>
+      <p class="text-muted mb-0">{{ isEditMode  ? 'Update your product information.'  : 'Add a new product to your store.' }}
+      </p>
+    </div>
+    <button  type="button"
+      class="btn btn-outline-secondary"
+      (click)="goBack()">
+      <i class="bi bi-arrow-left me-1"></i>
+      Back to Products
+    </button>
+  </div>
+
+
+  <!-- Product Form -->
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <form
+        #productForm="ngForm"
+        (ngSubmit)="saveProduct(productForm)"
+        novalidate>
+
+
+        <!-- Product Name -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Product Name
+          </label>
+
+          <input
+            type="text"
+            class="form-control"
+            name="name"
+            [(ngModel)]="product.name"
+            #name="ngModel"
+            required
+            minlength="3"
+            maxlength="100"
+            placeholder="Enter product name">
+
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              name.invalid &&
+              (name.dirty || name.touched)
+            ">
+
+            <small *ngIf="name.errors?.['required']">
+              Product name is required.
+            </small>
+
+            <small *ngIf="name.errors?.['minlength']">
+              Product name must be at least 3 characters.
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- Description -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Description
+          </label>
+
+          <textarea
+            class="form-control"
+            name="description"
+            rows="4"
+            [(ngModel)]="product.description"
+            #description="ngModel"
+            required
+            minlength="10"
+            maxlength="1000"
+            placeholder="Enter product description">
+          </textarea>
+
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              description.invalid &&
+              (description.dirty ||
+              description.touched)
+            ">
+
+            <small
+              *ngIf="
+                description.errors?.['required']
+              ">
+
+              Description is required.
+
+            </small>
+
+            <small
+              *ngIf="
+                description.errors?.['minlength']
+              ">
+
+              Description must be at least
+              10 characters.
+
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- Price -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Price
+          </label>
+
+          <div class="input-group">
+
+            <span class="input-group-text">
+              ₹
+            </span>
+
+            <input
+              type="number"
+              class="form-control"
+              name="price"
+              [(ngModel)]="product.price"
+              #price="ngModel"
+              required
+              min="1"
+              placeholder="Enter product price">
+
+          </div>
+
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              price.invalid &&
+              (price.dirty || price.touched)
+            ">
+
+            <small
+              *ngIf="
+                price.errors?.['required']
+              ">
+
+              Price is required.
+
+            </small>
+
+            <small
+              *ngIf="
+                price.errors?.['min']
+              ">
+
+              Price must be greater than 0.
+
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- Category -->
+
+        <div class="mb-3">
+
+          <label class="form-label">
+            Category
+          </label>
+
+          <select
+            class="form-select"
+            name="categoryId"
+            [(ngModel)]="product.categoryId"
+            #categoryId="ngModel"
+            required>
+
+            <option
+              [ngValue]="0">
+
+              Select Category
+
+            </option>
+
+            <option
+              *ngFor="
+                let category of categories
+              "
+              [ngValue]="category.id">
+
+              {{ category.name }}
+
+            </option>
+
+          </select>
+
+          <div
+            class="text-danger mt-1"
+            *ngIf="
+              categoryId.invalid &&
+              (categoryId.dirty ||
+              categoryId.touched)
+            ">
+
+            <small>
+              Please select a category.
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- Image URL -->
+
+        <div class="mb-4">
+        
+          <label class="form-label">
+            Image URL
+          </label>
+        
+          <!-- <input
+                    type="text"
+                    class="form-control"
+                    name="imageUrl"
+                    [(ngModel)]="product.imageUrl"
+                    #imageUrl="ngModel"
+                    required
+                    placeholder="Enter image URL"> -->
+          <input type="file" class="form-control" name="image" accept=".jpg,.jpeg,.png" (change)="onImageSelected($event)">
+        
+          <!-- <div class="text-danger mt-1" *ngIf="
+                      imageUrl.invalid &&
+                      (imageUrl.dirty ||
+                      imageUrl.touched)
+                    ">
+            <small>
+              Image URL is required.
+            </small>
+          </div> -->
+          <div class="mt-3" *ngIf="imagePreview">
+            
+              <img [src]="imagePreview" class="img-thumbnail product-preview" alt="Product Preview">
+            
+            </div>
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <div
+          class="d-flex justify-content-end gap-2">
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="isSubmitting"
+            (click)="goBack()">
+
+            Cancel
+
+          </button>
+
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="
+              productForm.invalid ||
+              isSubmitting
+            ">
+
+            <span
+              *ngIf="isSubmitting"
+              class="spinner-border spinner-border-sm me-2">
+            </span>
+
+            {{ isEditMode
+              ? 'Update Product'
+              : 'Add Product'
+            }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

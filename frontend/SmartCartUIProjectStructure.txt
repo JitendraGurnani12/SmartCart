@@ -1,0 +1,114 @@
+# SmartCart Angular Frontend Structure
+
+```text
+src/app
+│
+├── core
+│   ├── guards
+│   │   └── auth.guard.ts
+│   │
+│   ├── interceptors
+│   │   └── auth.interceptor.ts
+│   │
+│   ├── services
+│   │   ├── auth.service.ts
+│   │   ├── storage.service.ts
+│   │   └── notification.service.ts
+│   │
+│   └── models
+│       ├── api-response.model.ts
+│       └── page-response.model.ts
+│
+├── shared
+│   ├── components
+│   │   ├── navbar
+│   │   ├── footer
+│   │   ├── loading-spinner
+│   │   └── empty-state
+│   │
+│   ├── pipes
+│   └── directives
+│
+├── layouts
+│   ├── main-layout
+│   └── auth-layout
+│
+├── features
+│   │
+│   ├── auth
+│   │   ├── components
+│   │   ├── pages
+│   │   │   ├── login
+│   │   │   └── register
+│   │   │
+│   │   ├── models
+│   │   │   ├── login-request.model.ts
+│   │   │   └── register-request.model.ts
+│   │   │
+│   │   ├── services
+│   │   │   └── auth-api.service.ts
+│   │   │
+│   │   ├── auth-routing.module.ts
+│   │   └── auth.module.ts
+│   │
+│   ├── products
+│   │   ├── components
+│   │   │   ├── product-card
+│   │   │   └── product-filter
+│   │   │
+│   │   ├── pages
+│   │   │   ├── product-list
+│   │   │   └── product-details
+│   │   │
+│   │   ├── models
+│   │   │   ├── product.model.ts
+│   │   │   └── category.model.ts
+│   │   │
+│   │   ├── services
+│   │   │   ├── product.service.ts
+│   │   │   └── category.service.ts
+│   │   │
+│   │   ├── products-routing.module.ts
+│   │   └── products.module.ts
+│   │
+│   ├── cart
+│   │   ├── components
+│   │   │   ├── cart-item
+│   │   │   └── cart-summary
+│   │   │
+│   │   ├── pages
+│   │   │   └── cart-page
+│   │   │
+│   │   ├── models
+│   │   │   ├── cart.model.ts
+│   │   │   └── cart-item.model.ts
+│   │   │
+│   │   ├── services
+│   │   │   └── cart.service.ts
+│   │   │
+│   │   ├── cart-routing.module.ts
+│   │   └── cart.module.ts
+│   │
+│   ├── orders
+│   │   ├── components
+│   │   ├── pages
+│   │   │   ├── order-history
+│   │   │   └── checkout
+│   │   │
+│   │   ├── models
+│   │   │   ├── order.model.ts
+│   │   │   └── order-item.model.ts
+│   │   │
+│   │   ├── services
+│   │   │   └── order.service.ts
+│   │   │
+│   │   ├── orders-routing.module.ts
+│   │   └── orders.module.ts
+│
+├── constants
+│   ├── api-endpoints.ts
+│   └── app.constants.ts
+│
+├── app-routing.module.ts
+└── app.module.ts
+```

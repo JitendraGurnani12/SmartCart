@@ -52,6 +52,8 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkS
 
     builder.Services.AddScoped<IOrderService ,OrderService>();
     builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+
+    builder.Services.AddScoped<IFileService, FileService>();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowAnyOrigins", policy =>
@@ -178,7 +180,7 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
-    var sellerEmail = "seller@smartcart.com";
+    var sellerEmail = "seller2@smartcart.com";
     var sellerUser = await userManager.FindByNameAsync(sellerEmail);
     if(sellerUser == null)
     {

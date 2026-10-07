@@ -1,1 +1,188 @@
-<p>my-products works!</p>
+<div class="container-fluid py-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="mb-1">My Products</h3>
+      <p class="text-muted mb-0">
+        Manage your products, update details, or remove products.
+      </p>
+    </div>
+
+    <button type="button" class="btn btn-primary" (click)="addProduct()">
+      <i class="bi bi-plus-lg me-1"></i>
+      Add Product
+    </button>
+  </div>
+
+
+  <!-- Search & Filter -->
+  <div class="row align-items-center mb-4">
+
+    <div class="col-md-6">
+      <h2 class="mb-0">Products</h2>
+    </div>
+
+    <div class="col-md-6">
+
+      <div class="input-group">
+
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+
+        <input type="text" class="form-control" placeholder="Search products..." [(ngModel)]="searchText"
+          (input)="onSearch()">
+
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row mb-4">
+
+    <div class="col-md-4">
+
+      <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+
+        <option [value]="0">
+          All Categories
+        </option>
+
+        <option *ngFor="let category of categories" [value]="category.id">
+
+          {{ category.name }}
+
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- Products Table -->
+  <div class="card shadow-sm">
+
+    <div class="card-body p-0">
+
+      <!-- No Products -->
+      <div *ngIf="products.length === 0" class="text-center py-5">
+
+        <i class="bi bi-box-seam fs-1 text-muted"></i>
+
+        <h5 class="mt-3">
+          No Products Found
+        </h5>
+
+        <p class="text-muted">
+          You haven't added any products yet.
+        </p>
+
+        <button type="button" class="btn btn-primary" (click)="addProduct()">
+          Add Your First Product
+        </button>
+
+      </div>
+
+
+      <!-- Product Table -->
+      <div class="table-responsive" *ngIf="products.length > 0">
+
+        <table class="table table-hover align-middle mb-0">
+
+          <thead class="table-light">
+
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Product</th>
+              <th scope="col">Category</th>
+              <th scope="col">Price</th>
+              <th scope="col" class="text-center">
+                Actions
+              </th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="
+                let product of products;
+                let i = index
+              ">
+
+              <!-- Serial Number -->
+              <td>
+                {{ (page - 1) * pageSize + i + 1 }}
+              </td>
+              <!-- Product -->
+              <td>
+                <div class="d-flex align-items-center">
+                  <img [src]="product.imageUrl" [alt]="product.name" class="product-image me-3">
+
+                  <div>
+                    <div class="fw-semibold">
+                      {{ product.name }}
+                    </div>
+
+                    <small class="text-muted">
+                      {{ product.description }}
+                    </small>
+                  </div>
+
+                </div>
+              </td>
+              <!-- Category -->
+              <td>
+                {{ getCategoryName(product.categoryId) }}
+              </td>
+              <!-- Price -->
+              <td>
+                <span class="fw-semibold">
+                  ₹{{ product.price }}
+                </span>
+              </td>
+              <!-- Actions -->
+              <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" title="Edit Product"
+                  (click)="editProduct(product.id)">
+                  <i class="bi bi-pencil"></i>
+                  Edit
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" title="Delete Product"
+                  (click)="deleteProduct(product.id)">
+
+                  <i class="bi bi-trash"></i>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav *ngIf="totalPages > 1">
+      <ul class="pagination justify-content-center mt-4">
+        <li class="page-item" [class.disabled]="page==1">
+          <button class="page-link" (click)="changePage(page-1)">
+            Previous
+          </button>
+        </li>
+        <li class="page-item" *ngFor="let p of pageNumbers" [class.active]="page==p">
+          <button class="page-link" (click)="changePage(p)">
+            {{p}}
+          </button>
+        </li>
+        <li class="page-item" [class.disabled]="page==totalPages">
+          <button class="page-link" (click)="changePage(page+1)">
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

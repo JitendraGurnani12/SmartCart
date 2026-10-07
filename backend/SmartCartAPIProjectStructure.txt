@@ -1,0 +1,85 @@
+## Project Structure
+
+```
+SmartCart.API/
+├──  
+│  ├── appsettings.Development.json
+│  ├── appsettings.json       
+├── Controllers
+│   ├── AuthController.cs
+│   ├── CartController.cs
+│   ├── CategoryController.cs
+│   ├── OrderController.cs
+│   ├── ProductController.cs
+├── Data
+│   └── AppDbContext.cs
+├── DTOs
+│   ├── ApiResponse.cs
+│   ├── CartDto.cs
+│   ├── CartItemDto.cs
+│   ├── CategoryDto.cs
+│   ├── LoginDto.cs
+│   ├── OrderDto.cs
+│   ├── OrderItemDto.cs
+│   ├── PageResponseDto.cs
+│   ├── ProductDto.cs
+│   └── RegisterDto.cs
+├── Entities
+│   ├── ApplicationUser.cs
+│   ├── BaseEntity.cs
+│   ├── Cart.cs
+│   ├── CartItem.cs
+│   ├── Category.cs
+│   ├── Order.cs
+│   ├── OrderItem.cs
+│   └── Product.cs
+├── logs 
+│   ├── log2026051217.txt
+├── Middleware
+│   └── ExceptionMiddleware.cs
+├── Migrations
+│   ├── 20260415171129_InitialCreate.cs
+│   ├── 20260415171129_InitialCreate.Designer.cs
+│   
+│   ├── 20260420131044_addCartAndCartItemEntity.cs
+│   ├── 20260420131044_addCartAndCartItemEntity.Designer.cs
+│   ├── 20260421165610_addOrderAndOrderItemEntity.cs
+
+│   └── AppDbContextModelSnapshot.cs
+├── 
+│   └── SmartCart.API.csproj.nuget.g.targets
+├── Properties
+│   └── launchSettings.json
+├── Repositories
+│   ├── Implementation
+│   │   ├── CartRepository.cs
+│   │   ├── CategoryRepository.cs
+│   │   ├── OrderRepository.cs
+│   │   └── ProductRepository.cs
+│   └── Interface
+│       ├── ICartRepository.cs
+│       ├── ICategoryRepository.cs
+│       ├── IOrderRepository.cs
+│       └── IProductRepository.cs
+├── Services
+│   ├── Implementation
+│   │   ├── CartService.cs
+│   │   ├── CategoryService.cs
+│   │   ├── OrderService.cs
+│   │   └── ProductService.cs
+│   └── Interface
+│       ├── ICartService.cs
+│       ├── ICategoryService.cs
+│       ├── IOrderService.cs
+│       └── IProductService.cs
+├── appsettings.Development.json
+├── appsettings.json
+├── docker-compose.yml
+├── Dockerfile
+├── Program.cs
+├── SmartCart.API.csproj
+├── SmartCart.API.http
+├── SmartCart.API.sln
+└─
+```
+

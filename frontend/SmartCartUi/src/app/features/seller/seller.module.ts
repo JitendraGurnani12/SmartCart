@@ -1,20 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { MyProductsComponent } from './pages/my-products/my-products.component';
+import {  SellerMyProductListComponent } from './pages/my-products/my-products.component';
 import { SellerRoutingModule } from './seller-routing.model';
-import { ProductformComponent } from './pages/productform/productform.component';
+import {  SellerProductAddEditComponent } from './pages/seller-product-add-edit/seller-product-add-edit.component';
+import { FormsModule } from '@angular/forms';
 
 
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    MyProductsComponent,
-    ProductformComponent
+    SellerMyProductListComponent,
+    SellerProductAddEditComponent
   ],
   imports: [
     CommonModule,
+    FormsModule,
     SellerRoutingModule
   ]
 })
